@@ -116,11 +116,47 @@ O documento completo está disponível no seguinte arquivo:
 
 ## 8. Normalização
 
-O esquema relacional será analisado de acordo com as formas normais, atendendo, no mínimo, aos requisitos da Segunda Forma Normal (2FN).
+O esquema relacional do Sistema de Gestão para Concessionária de Veículos foi analisado em relação às formas normais com o objetivo de reduzir redundâncias, evitar anomalias de inserção, atualização e exclusão e manter a consistência dos dados.
 
-A análise e a justificativa da normalização serão adicionadas nesta seção após a conclusão dessa etapa.
+### 8.1 Primeira Forma Normal (1FN)
 
-**Situação atual:** em desenvolvimento.
+Todas as relações do esquema atendem à Primeira Forma Normal.
+
+Os atributos armazenam valores atômicos, não existindo grupos repetitivos ou atributos multivalorados armazenados em uma única coluna.
+
+No caso da tabela `CLIENTES`, o endereço foi decomposto nos atributos `rua`, `numero` e `cep`, evitando o armazenamento de uma estrutura composta em um único atributo.
+
+Da mesma forma, o relacionamento entre veículos e customizações não é armazenado como uma lista dentro da tabela `VEICULOS`. Essa relação é representada pela tabela associativa `VEICULO_CUSTOMIZACAO`, permitindo registrar individualmente cada associação entre um veículo e uma customização.
+
+Dessa forma, o esquema atende aos requisitos da 1FN.
+
+### 8.2 Segunda Forma Normal (2FN)
+
+Para atender à Segunda Forma Normal, uma relação deve estar na Primeira Forma Normal e todos os seus atributos não-chave devem possuir dependência funcional completa em relação à chave primária.
+
+As tabelas `CLIENTES`, `PESSOAS_FISICAS`, `PESSOAS_JURIDICAS`, `VENDEDORES`, `VENDAS`, `VEICULOS`, `VEICULOS_NOVOS`, `VEICULOS_USADOS` e `CUSTOMIZACOES` possuem chaves primárias formadas por apenas um atributo. Por esse motivo, não apresentam dependências parciais de chave.
+
+A tabela `VEICULO_CUSTOMIZACAO` possui chave primária composta pelos atributos `chassi` e `codigo_customizacao`.
+
+Seu atributo não-chave, `preco_aplicado`, depende da combinação completa desses dois atributos, pois representa o preço de uma determinada customização aplicada a um veículo específico.
+
+Assim, não existe dependência de `preco_aplicado` apenas em `chassi` ou apenas em `codigo_customizacao`.
+
+Consequentemente, todas as relações do esquema atendem à Segunda Forma Normal.
+
+### 8.3 Terceira Forma Normal (3FN)
+
+Embora o requisito mínimo da entrega seja a Segunda Forma Normal, o esquema também foi analisado em relação à Terceira Forma Normal.
+
+Não foram identificadas dependências transitivas entre atributos não-chave nas relações definidas pelo modelo.
+
+Informações referentes a entidades distintas permanecem armazenadas em suas respectivas tabelas e são relacionadas por meio de chaves estrangeiras.
+
+Por exemplo, a tabela `VENDAS` armazena apenas os identificadores `id_cliente` e `matricula_vendedor` para estabelecer os relacionamentos com `CLIENTES` e `VENDEDORES`. Dados como nome, CPF e demais informações dessas entidades não são repetidos na tabela `VENDAS`.
+
+Da mesma forma, a tabela `VEICULO_CUSTOMIZACAO` utiliza as chaves estrangeiras `chassi` e `codigo_customizacao`, sem repetir os demais dados existentes nas tabelas `VEICULOS` e `CUSTOMIZACOES`.
+
+Com base nas dependências funcionais definidas pelo modelo, o esquema encontra-se normalizado até a Terceira Forma Normal (3FN), atendendo, portanto, ao requisito mínimo de normalização estabelecido para a entrega.
 
 ---
 
