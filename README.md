@@ -71,18 +71,16 @@ Os veículos podem apresentar três estados de disponibilidade: `disponivel`, `r
 
 ## 5. Configuração do Banco de Dados
 
-A configuração atualmente utilizada pela aplicação é:
+A configuração utilizada no ambiente local e no ambiente Docker do projeto é:
 
 * **SGBD:** MySQL 8
 * **Nome do banco:** `concessionaria`
-* **Host:** `localhost`
+* **Host:** `localhost` (aplicação local acessando o container)
 * **Porta:** `3306`
-* **Usuário:** `root`
-* **Senha:** configurada por meio da variável de ambiente `DB_PASSWORD`
+* **Usuário:** `concessionaria`
+* **Senha:** `concessionaria123`
 
-A senha do banco de dados não é armazenada diretamente no código-fonte. A variável de ambiente `DB_PASSWORD` deve ser configurada no ambiente em que a aplicação for executada.
-
-A configuração definitiva utilizada pelo ambiente Docker será documentada após a conclusão da etapa de conteinerização.
+Essa configuração está alinhada com o serviço definido em [docker-compose.yml](docker-compose.yml), que cria o banco e expõe a porta `3306` para acesso local.
 
 ---
 
@@ -192,13 +190,40 @@ A metodologia utilizada para geração e inserção dos dados será documentada 
 
 ## 11. Ambiente de Execução com Docker
 
-O ambiente de banco de dados será disponibilizado utilizando Docker.
+O arquivo [docker-compose.yml](docker-compose.yml) configura o serviço do MySQL e inicializa o banco em um contêiner Docker.
 
-O arquivo `docker-compose.yml` será responsável pela configuração do serviço do MySQL e pela inicialização do banco de dados.
+### Configuração do banco
+- SGBD: MySQL 8
+- Banco: `concessionaria`
+- Usuário: `concessionaria`
+- Senha: `concessionaria123`
+- Porta: `3306`
 
-Ao final da implementação, o ambiente deverá permitir que a estrutura do banco seja criada e que os dados sejam carregados de forma automatizada.
+### Como executar
+No diretório raiz do projeto, execute:
 
-**Situação atual:** em desenvolvimento.
+```bash
+docker compose up -d
+```
+
+Para verificar se o container está em execução:
+
+```bash
+docker compose ps
+```
+
+Para parar o ambiente:
+
+```bash
+docker compose down
+```
+
+### Estrutura de inicialização
+Os scripts SQL de criação e povoamento do banco ficam na pasta `init-scripts` e são executados automaticamente pelo MySQL ao subir o container.
+
+Arquivos esperados:
+- `01-create-schema.sql`
+- `02-seed.sql`
 
 ---
 
