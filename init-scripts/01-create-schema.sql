@@ -17,71 +17,71 @@ create table clientes (
 );
 
 create table pessoas_fisicas(
-	id_cliente int unsigned not null,
+    id_cliente int unsigned not null,
     cpf char(11) not null,
-    
+
     constraint pk_pessoas_fisicas
-		primary key (id_cliente),
-        
-	constraint uq_pessoas_fisicas_cpf
-		unique (cpf),
-        
-	constraint fk_pessoas_fisicas_clientes
-		foreign key (id_cliente)
+        primary key (id_cliente),
+
+    constraint uq_pessoas_fisicas_cpf
+        unique (cpf),
+
+    constraint fk_pessoas_fisicas_clientes
+        foreign key (id_cliente)
         references clientes (id_cliente)
 );
 
 create table pessoas_juridicas (
-	id_cliente int unsigned not null,
+    id_cliente int unsigned not null,
     cnpj char(14) not null,
-    
+
     constraint pk_pessoas_juridicas
-		primary key (id_cliente),
-        
-	constraint uq_pessoas_juridicas_cnpj
-		unique (cnpj),
-	
+        primary key (id_cliente),
+
+    constraint uq_pessoas_juridicas_cnpj
+        unique (cnpj),
+
     constraint fk_pessoas_juridicas
-		foreign key (id_cliente)
+        foreign key (id_cliente)
         references clientes (id_cliente)
 );
 
 create table vendedores (
-	matricula int unsigned not null auto_increment,
+    matricula int unsigned not null auto_increment,
     nome varchar(120) not null,
     cpf char(11) not null,
-    
+
     constraint pk_vendedores
-		primary key (matricula),
-        
-	constraint uq_vendedores_cpf
-		unique (cpf)
+        primary key (matricula),
+
+    constraint uq_vendedores_cpf
+        unique (cpf)
 );
 
 create table vendas(
-	numero_nota bigint unsigned not null auto_increment,
+    numero_nota bigint unsigned not null auto_increment,
     id_cliente int unsigned not null,
     matricula_vendedor int unsigned not null,
     valor_total_venda decimal(12,2) not null,
     data_da_venda date not null,
-    
+
     constraint pk_vendas
-		primary key (numero_nota),
-    
+        primary key (numero_nota),
+
     constraint fk_vendas_clientes
-		foreign key (id_cliente)
+        foreign key (id_cliente)
         references clientes(id_cliente),
-        
-	constraint fk_vendas_vendedor 
-		foreign key (matricula_vendedor)
+
+    constraint fk_vendas_vendedor
+        foreign key (matricula_vendedor)
         references vendedores(matricula),
-	
+
     constraint ck_vendas_valor_total
-		check (valor_total_venda > 0)
+        check (valor_total_venda > 0)
 );
 
 create table veiculos(
-	chassi char(17) not null,
+    chassi char(17) not null,
     numero_nota bigint unsigned,
     marca varchar(50) not null,
     modelo varchar(80) not null,
@@ -89,68 +89,67 @@ create table veiculos(
     data_fabricacao date not null,
     status_disponibilidade varchar(20) not null,
     valor_veiculo decimal(12,2) not null,
-    
+
     constraint pk_veiculos
-		primary key(chassi),
-        
-	constraint fk_nota_venda
-		foreign key (numero_nota)
+        primary key(chassi),
+
+    constraint fk_nota_venda
+        foreign key (numero_nota)
         references vendas(numero_nota),
-        
-	constraint ck_veiculos_disponibilade
-		check(
-			status_disponibilidade in (
-				'disponivel',
+
+    constraint ck_veiculos_disponibilidade
+        check(
+            status_disponibilidade in (
+                'disponivel',
                 'reservado',
                 'vendido'
-			)
-		),
-        
-	constraint ck_valor_veiculo
-		check (valor_veiculo > 0)
+            )
+        ),
+
+    constraint ck_valor_veiculo
+        check (valor_veiculo > 0)
 );
 
-        
 create table veiculos_novos (
-	chassi char(17) not null,
-    
+    chassi char(17) not null,
+
     constraint pk_veiculos_novos
-		primary key (chassi),
-        
-	constraint fk_veiculo_novo_chassi
-		foreign key (chassi)
+        primary key (chassi),
+
+    constraint fk_veiculo_novo_chassi
+        foreign key (chassi)
         references veiculos(chassi)
-	);
+);
 
 create table veiculos_usados(
-	chassi char(17) not null,
+    chassi char(17) not null,
     placa char(7) not null,
     quilometragem int unsigned not null,
-    
+
     constraint pk_veiculos_usados
-		primary key (chassi),
-        
-	constraint fk_veiculo_usado_chassi
-		foreign key (chassi)
+        primary key (chassi),
+
+    constraint fk_veiculo_usado_chassi
+        foreign key (chassi)
         references veiculos(chassi),
-	
+
     constraint uq_placa
-		unique (placa),
-        
-	constraint ck_quilometragem
-		check(quilometragem>=0)
+        unique (placa),
+
+    constraint ck_quilometragem
+        check(quilometragem >= 0)
 );
 
 create table customizacoes(
-	codigo int unsigned not null auto_increment,
+    codigo int unsigned not null auto_increment,
     nome_opcional varchar(100) not null,
     valor_tabela decimal(10,2) not null,
-    
+
     constraint pk_codigo
-		primary key (codigo),
-        
-	constraint ck_customizacoes_valor_tabela
-		check (valor_tabela>=0)
+        primary key (codigo),
+
+    constraint ck_customizacoes_valor_tabela
+        check (valor_tabela >= 0)
 );
 
 create table veiculo_customizacao (
@@ -172,5 +171,25 @@ create table veiculo_customizacao (
     constraint ck_veiculo_customizacao_preco
         check (preco_aplicado >= 0)
 );
+
+-- Índices auxiliares para consultas frequentes
+
+CREATE INDEX idx_clientes_nome
+    ON clientes (nome);
+
+CREATE INDEX idx_vendedores_nome
+    ON vendedores (nome);
+
+CREATE INDEX idx_vendas_data
+    ON vendas (data_da_venda);
+
+CREATE INDEX idx_veiculos_status
+    ON veiculos (status_disponibilidade);
+
+CREATE INDEX idx_veiculos_marca_modelo
+    ON veiculos (marca, modelo);
+
+CREATE INDEX idx_customizacoes_nome
+    ON customizacoes (nome_opcional);
 
 SHOW TABLES;
