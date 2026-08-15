@@ -178,13 +178,28 @@ O arquivo será disponibilizado no diretório `sql` do repositório.
 
 ## 10. Povoamento do Banco de Dados
 
-O banco de dados será povoado com dados plausíveis para permitir a realização de testes e consultas.
+O povoamento do banco de dados é realizado pelo script `init-scripts/02-seed.sql`, executado automaticamente pelo MySQL durante a inicialização do ambiente Docker.
 
-O povoamento respeitará o volume mínimo de registros estabelecido para as tabelas principais e secundárias.
+Os dados foram inseridos respeitando as dependências entre as tabelas, as chaves estrangeiras e as restrições de integridade definidas no esquema.
 
-A metodologia utilizada para geração e inserção dos dados será documentada nesta seção após a conclusão dessa etapa.
+A carga atual contém:
 
-**Situação atual:** em desenvolvimento.
+- 70 clientes;
+- 50 pessoas físicas;
+- 20 pessoas jurídicas;
+- 50 vendedores;
+- 50 vendas;
+- 60 veículos;
+- 30 veículos novos;
+- 30 veículos usados;
+- 70 customizações;
+- 60 associações entre veículos e customizações.
+
+Foram utilizados dados plausíveis e sintéticos, incluindo identificadores únicos para CPF, CNPJ, chassi e placa, além de valores, datas, quilometragens e relações coerentes entre clientes, vendedores, vendas, veículos e customizações.
+
+O povoamento foi validado em ambiente Docker a partir de um banco vazio, confirmando a criação das tabelas e a inserção dos registros sem erros.
+
+**Situação atual:** concluído.
 
 ---
 
