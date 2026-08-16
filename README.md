@@ -111,10 +111,11 @@ O documento completo está disponível no seguinte arquivo:
 * [Dicionário de Dados em PDF](docs/dicionario_de_dados.pdf)
 
 ---
-
 ## 8. Normalização
 
-O esquema relacional do Sistema de Gestão para Concessionária de Veículos foi analisado em relação às formas normais com o objetivo de reduzir redundâncias, evitar anomalias de inserção, atualização e exclusão e manter a consistência dos dados.
+O esquema relacional do Sistema de Gestão para Concessionária de Veículos foi analisado com o objetivo de reduzir redundâncias, evitar anomalias de inserção, atualização e exclusão e manter a consistência dos dados.
+
+A normalização foi verificada até a Segunda Forma Normal (2FN), conforme o requisito estabelecido para a entrega.
 
 ### 8.1 Primeira Forma Normal (1FN)
 
@@ -122,82 +123,105 @@ Todas as relações do esquema atendem à Primeira Forma Normal.
 
 Os atributos armazenam valores atômicos, não existindo grupos repetitivos ou atributos multivalorados armazenados em uma única coluna.
 
-No caso da tabela `CLIENTES`, o endereço foi decomposto nos atributos `rua`, `numero` e `cep`, evitando o armazenamento de uma estrutura composta em um único atributo.
+Na tabela `CLIENTES`, o endereço foi representado por atributos distintos, como `rua`, `numero` e `cep`, evitando o armazenamento de uma estrutura composta em um único campo.
 
-Da mesma forma, o relacionamento entre veículos e customizações não é armazenado como uma lista dentro da tabela `VEICULOS`. Essa relação é representada pela tabela associativa `VEICULO_CUSTOMIZACAO`, permitindo registrar individualmente cada associação entre um veículo e uma customização.
+Da mesma forma, o relacionamento entre veículos e customizações não é armazenado como uma lista dentro da tabela `VEICULOS`. Essa relação é representada pela tabela associativa `VEICULO_CUSTOMIZACAO`, permitindo que cada associação entre um veículo e uma customização seja registrada individualmente.
 
-Dessa forma, o esquema atende aos requisitos da 1FN.
+Dessa forma, todas as relações do esquema atendem aos requisitos da Primeira Forma Normal.
 
 ### 8.2 Segunda Forma Normal (2FN)
 
-Para atender à Segunda Forma Normal, uma relação deve estar na Primeira Forma Normal e todos os seus atributos não-chave devem possuir dependência funcional completa em relação à chave primária.
+Para que uma relação esteja na Segunda Forma Normal, ela deve atender à Primeira Forma Normal e todos os atributos não-chave devem depender funcionalmente da chave primária completa, não existindo dependências parciais.
 
-As tabelas `CLIENTES`, `PESSOAS_FISICAS`, `PESSOAS_JURIDICAS`, `VENDEDORES`, `VENDAS`, `VEICULOS`, `VEICULOS_NOVOS`, `VEICULOS_USADOS` e `CUSTOMIZACOES` possuem chaves primárias formadas por apenas um atributo. Por esse motivo, não apresentam dependências parciais de chave.
+As tabelas `CLIENTES`, `PESSOAS_FISICAS`, `PESSOAS_JURIDICAS`, `VENDEDORES`, `VENDAS`, `VEICULOS`, `VEICULOS_NOVOS`, `VEICULOS_USADOS` e `CUSTOMIZACOES` possuem chaves primárias constituídas por um único atributo. Dessa forma, não há possibilidade de dependência parcial em relação à chave primária nessas tabelas.
 
-A tabela `VEICULO_CUSTOMIZACAO` possui chave primária composta pelos atributos `chassi` e `codigo_customizacao`.
+A tabela `VEICULO_CUSTOMIZACAO` é a única relação do esquema que possui chave primária composta, formada pelos atributos `chassi` e `codigo_customizacao`.
 
-Seu atributo não-chave, `preco_aplicado`, depende da combinação completa desses dois atributos, pois representa o preço de uma determinada customização aplicada a um veículo específico.
+O atributo não-chave `preco_aplicado` depende da combinação completa de `chassi` e `codigo_customizacao`, pois representa o preço aplicado a uma determinada customização em um veículo específico.
 
-Assim, não existe dependência de `preco_aplicado` apenas em `chassi` ou apenas em `codigo_customizacao`.
+Portanto, `preco_aplicado` não depende exclusivamente de `chassi` nem exclusivamente de `codigo_customizacao`, mas da combinação dos dois atributos que compõem a chave primária.
 
-Consequentemente, todas as relações do esquema atendem à Segunda Forma Normal.
+Com base nessa análise, não foram identificadas dependências parciais nas relações do esquema.
 
-### 8.3 Terceira Forma Normal (3FN)
+### 8.3 Conclusão da Normalização
 
-Embora o requisito mínimo da entrega seja a Segunda Forma Normal, o esquema também foi analisado em relação à Terceira Forma Normal.
+Todas as relações do esquema atendem à Primeira Forma Normal (1FN) e à Segunda Forma Normal (2FN).
 
-Não foram identificadas dependências transitivas entre atributos não-chave nas relações definidas pelo modelo.
+Em especial, a tabela `VEICULO_CUSTOMIZACAO`, por possuir uma chave primária composta, foi analisada quanto à existência de dependências parciais, sendo verificado que seu atributo não-chave `preco_aplicado` depende funcionalmente da chave primária completa.
 
-Informações referentes a entidades distintas permanecem armazenadas em suas respectivas tabelas e são relacionadas por meio de chaves estrangeiras.
-
-Por exemplo, a tabela `VENDAS` armazena apenas os identificadores `id_cliente` e `matricula_vendedor` para estabelecer os relacionamentos com `CLIENTES` e `VENDEDORES`. Dados como nome, CPF e demais informações dessas entidades não são repetidos na tabela `VENDAS`.
-
-Da mesma forma, a tabela `VEICULO_CUSTOMIZACAO` utiliza as chaves estrangeiras `chassi` e `codigo_customizacao`, sem repetir os demais dados existentes nas tabelas `VEICULOS` e `CUSTOMIZACOES`.
-
-Com base nas dependências funcionais definidas pelo modelo, o esquema encontra-se normalizado até a Terceira Forma Normal (3FN), atendendo, portanto, ao requisito mínimo de normalização estabelecido para a entrega.
-
+Dessa forma, o esquema relacional encontra-se normalizado até a Segunda Forma Normal (2FN), atendendo ao requisito mínimo de normalização estabelecido para a entrega.
 ---
 
 ## 9. Implementação Física do Banco de Dados
 
-A implementação física será realizada por meio de um script SQL DDL responsável pela criação da estrutura do banco de dados.
+A implementação física do banco de dados foi realizada por meio de um script SQL DDL, responsável pela criação da estrutura relacional definida no Modelo Lógico e no Dicionário de Dados.
 
-O script contemplará:
+O arquivo utilizado é:
 
-* criação das tabelas;
-* definição das chaves primárias;
-* definição das chaves estrangeiras;
-* restrições de integridade;
-* índices necessários.
+- `init-scripts/01-create-schema.sql`
 
-O arquivo será disponibilizado no diretório `sql` do repositório.
+O script contempla a criação das tabelas do sistema, chaves primárias, chaves estrangeiras, restrições `NOT NULL`, `UNIQUE` e `CHECK`, além dos índices necessários às restrições e de índices auxiliares definidos para consultas frequentes.
 
-**Situação atual:** em desenvolvimento.
+As tabelas criadas são:
+
+- `CLIENTES`
+- `PESSOAS_FISICAS`
+- `PESSOAS_JURIDICAS`
+- `VENDEDORES`
+- `VENDAS`
+- `VEICULOS`
+- `VEICULOS_NOVOS`
+- `VEICULOS_USADOS`
+- `CUSTOMIZACOES`
+- `VEICULO_CUSTOMIZACAO`
+
+O script foi validado em MySQL 8 por meio da inicialização de um banco vazio no ambiente Docker, sendo executado sem erros e resultando na criação das dez tabelas previstas no esquema lógico.
+
+**Situação atual:** concluído.
 
 ---
 
 ## 10. Povoamento do Banco de Dados
 
-O povoamento do banco de dados é realizado pelo script `init-scripts/02-seed.sql`, executado automaticamente pelo MySQL durante a inicialização do ambiente Docker.
+O povoamento do banco de dados é realizado por meio do script:
 
-Os dados foram inseridos respeitando as dependências entre as tabelas, as chaves estrangeiras e as restrições de integridade definidas no esquema.
+- `init-scripts/02-seed.sql`
 
-A carga atual contém:
+A estratégia adotada foi a utilização de comandos SQL `INSERT` contendo dados sintéticos e plausíveis para o contexto de uma concessionária de veículos.
 
-- 70 clientes;
-- 50 pessoas físicas;
-- 20 pessoas jurídicas;
-- 50 vendedores;
-- 50 vendas;
-- 60 veículos;
-- 30 veículos novos;
-- 30 veículos usados;
-- 70 customizações;
-- 60 associações entre veículos e customizações.
+Os dados foram preparados respeitando a ordem das dependências entre as tabelas, permitindo que os registros referenciados pelas chaves estrangeiras fossem inseridos antes das tabelas dependentes.
 
-Foram utilizados dados plausíveis e sintéticos, incluindo identificadores únicos para CPF, CNPJ, chassi e placa, além de valores, datas, quilometragens e relações coerentes entre clientes, vendedores, vendas, veículos e customizações.
+A ordem principal de carga utilizada no script é:
 
-O povoamento foi validado em ambiente Docker a partir de um banco vazio, confirmando a criação das tabelas e a inserção dos registros sem erros.
+1. `CLIENTES`;
+2. `PESSOAS_FISICAS`;
+3. `PESSOAS_JURIDICAS`;
+4. `VENDEDORES`;
+5. `CUSTOMIZACOES`;
+6. `VENDAS`;
+7. `VEICULOS`;
+8. `VEICULOS_NOVOS`;
+9. `VEICULOS_USADOS`;
+10. `VEICULO_CUSTOMIZACAO`.
+
+Foram utilizados valores sintéticos para nomes, documentos, endereços, veículos, datas, valores monetários, quilometragens e customizações. Os identificadores sujeitos a restrições de unicidade, como CPF, CNPJ, placa e chassi, foram definidos de forma a não gerar duplicidades.
+
+A carga final contém:
+
+- 70 registros em `CLIENTES`;
+- 50 registros em `PESSOAS_FISICAS`;
+- 20 registros em `PESSOAS_JURIDICAS`;
+- 50 registros em `VENDEDORES`;
+- 50 registros em `VENDAS`;
+- 60 registros em `VEICULOS`;
+- 30 registros em `VEICULOS_NOVOS`;
+- 30 registros em `VEICULOS_USADOS`;
+- 70 registros em `CUSTOMIZACOES`;
+- 60 registros em `VEICULO_CUSTOMIZACAO`.
+
+O povoamento foi testado a partir de um banco vazio no ambiente Docker. A carga foi concluída sem violações de chaves estrangeiras, restrições `UNIQUE` ou restrições `CHECK`.
+
+Também foram verificadas regras de consistência entre os dados, incluindo a ausência de clientes simultaneamente classificados como pessoa física e pessoa jurídica, a ausência de veículos simultaneamente classificados como novos e usados e a associação coerente entre vendas e veículos.
 
 **Situação atual:** concluído.
 
@@ -205,83 +229,108 @@ O povoamento foi validado em ambiente Docker a partir de um banco vazio, confirm
 
 ## 11. Ambiente de Execução com Docker
 
-O arquivo [docker-compose.yml](docker-compose.yml) configura o serviço do MySQL e inicializa o banco em um contêiner Docker.
+O banco de dados é disponibilizado para execução local utilizando Docker e Docker Compose.
+
+O arquivo [docker-compose.yml](docker-compose.yml) configura um serviço baseado na imagem MySQL 8 e realiza automaticamente a criação e o povoamento do banco na primeira inicialização do ambiente.
 
 ### Configuração do banco
-- SGBD: MySQL 8
-- Banco: `concessionaria`
-- Usuário: `concessionaria`
-- Senha: `concessionaria123`
-- Porta: `3306`
 
-### Como executar
-No diretório raiz do projeto, execute:
+- **SGBD:** MySQL 8
+- **Banco:** `concessionaria`
+- **Host:** `localhost`
+- **Porta:** `3306`
+- **Usuário:** `concessionaria`
+- **Senha:** `concessionaria123`
 
-```bash
-docker compose up -d
-```
+### Inicialização
 
-Para verificar se o container está em execução:
+Na raiz do repositório, execute:
 
-```bash
-docker compose ps
-```
+`docker compose up -d`
 
-Para parar o ambiente:
+Durante a primeira inicialização, o MySQL executa automaticamente, nesta ordem:
 
-```bash
-docker compose down
-```
+- `init-scripts/01-create-schema.sql`
+- `init-scripts/02-seed.sql`
 
-### Estrutura de inicialização
-Os scripts SQL de criação e povoamento do banco ficam na pasta `init-scripts` e são executados automaticamente pelo MySQL ao subir o container.
+O primeiro arquivo cria a estrutura do banco e o segundo realiza o povoamento.
 
-Arquivos esperados:
-- `01-create-schema.sql`
-- `02-seed.sql`
+Para verificar o estado do contêiner:
+
+`docker compose ps`
+
+Para visualizar os logs:
+
+`docker compose logs db`
+
+Para encerrar o ambiente mantendo os dados armazenados no volume:
+
+`docker compose down`
+
+Para remover também o volume e permitir uma nova inicialização completa do banco:
+
+`docker compose down -v`
+
+Após a remoção do volume, o comando `docker compose up -d` executará novamente os scripts de criação e povoamento.
+
+O ambiente foi testado a partir de um volume vazio, sendo confirmadas a criação automática das dez tabelas e a inserção dos dados definidos no script de povoamento.
+
+**Situação atual:** concluído.
 
 ---
 
-## 12. Execução Atual da Aplicação
+## 12. Execução da Aplicação
 
-Enquanto o ambiente Docker específico da entrega de Banco de Dados não estiver concluído, a aplicação pode ser executada utilizando as ferramentas instaladas localmente.
+Para a entrega de Banco de Dados, a estrutura e o povoamento do banco são controlados pelos scripts SQL executados através do Docker.
 
 ### Pré-requisitos
 
 São necessários:
 
-* Java 21;
-* Node.js e npm;
-* MySQL Server 8;
-* Git.
+- Docker e Docker Compose;
+- Java 21 para execução do backend;
+- Node.js e npm para execução do frontend;
+- Git.
+
+### Banco de Dados
+
+Antes de iniciar a aplicação, execute na raiz do projeto:
+
+`docker compose up -d`
+
+O MySQL será disponibilizado na porta `3306`.
 
 ### Backend
 
 A partir da raiz do repositório, acesse o diretório `backend`.
 
-No Windows, o backend pode ser iniciado com:
+No Windows, execute:
 
 `.\mvnw.cmd spring-boot:run`
 
 O backend utiliza, por padrão, a porta `8080`.
 
-Antes da execução, a variável de ambiente `DB_PASSWORD` deve conter a senha do usuário MySQL configurado.
+A configuração do backend utiliza as mesmas credenciais definidas no ambiente Docker.
+
+O Hibernate está configurado com:
+
+`spring.jpa.hibernate.ddl-auto=none`
+
+Dessa forma, a estrutura do banco de dados não é criada nem modificada automaticamente pelo Hibernate. A definição oficial do esquema permanece sob responsabilidade do arquivo `init-scripts/01-create-schema.sql`.
 
 ### Frontend
 
 A partir da raiz do repositório, acesse o diretório `frontend`.
 
-As dependências podem ser instaladas com:
+Instale as dependências:
 
 `npm install`
 
-Em seguida, a aplicação pode ser iniciada com:
+Em seguida, execute:
 
 `npm start`
 
 O frontend utiliza, por padrão, a porta `4200`.
-
----
 
 ## 13. Organização das Entregas
 
