@@ -38,4 +38,40 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.CONFLICT)
                 .body(error);
     }  
+
+    @ExceptionHandler(jakarta.persistence.EntityNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleEntityNotFound(
+            jakarta.persistence.EntityNotFoundException exception
+    ) {
+        Map<String, String> error = new LinkedHashMap<>();
+        error.put("erro", exception.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(error);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, String>> handleIllegalArgument(
+            IllegalArgumentException exception
+    ) {
+        Map<String, String> error = new LinkedHashMap<>();
+        error.put("erro", exception.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(error);
+    }
+
+    @ExceptionHandler(DocumentoClienteJaCadastradoException.class)
+    public ResponseEntity<Map<String, String>> handleDocumentoClienteJaCadastrado(
+            DocumentoClienteJaCadastradoException exception
+    ) {
+        Map<String, String> error = new LinkedHashMap<>();
+        error.put("erro", exception.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(error);
+    }
 }

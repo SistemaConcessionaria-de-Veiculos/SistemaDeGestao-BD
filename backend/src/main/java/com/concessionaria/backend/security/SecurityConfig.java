@@ -41,6 +41,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .requestMatchers("/api/clientes/**").permitAll()
                 
                 // As histórias da 3ª iteração exigem funcionário autenticado, sem Role específica.
                 .requestMatchers(HttpMethod.POST, "/api/veiculos").authenticated()
