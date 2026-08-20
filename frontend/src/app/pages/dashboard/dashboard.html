@@ -5,61 +5,108 @@
   <main class="dashboard-content">
 
     <section class="welcome">
-      <span class="welcome-label">PAINEL PRINCIPAL</span>
+      <span class="welcome-label">
+        PAINEL PRINCIPAL
+      </span>
 
       <h1>Olá, {{ nome }}!</h1>
 
       <p>
-        Gerencie os veículos da concessionária de forma simples e organizada.
+        Gerencie clientes, vendedores, veículos e vendas
+        da concessionária de forma simples e organizada.
       </p>
     </section>
 
     <section class="actions">
 
-      <a routerLink="/veiculos/cadastro" class="action-card">
-        <div class="card-icon">+</div>
+      <a
+        routerLink="/clientes"
+        class="action-card"
+      >
+        <div class="card-icon">
+          C
+        </div>
 
         <div class="card-content">
-          <h2>Cadastrar veículo</h2>
+          <h2>Clientes</h2>
 
           <p>
-            Adicione um novo veículo ao sistema informando seus dados.
+            Consulte, cadastre, edite e exclua
+            clientes do sistema.
           </p>
 
           <span class="card-link">
-            Novo cadastro →
+            Gerenciar clientes →
           </span>
         </div>
       </a>
 
-      <a routerLink="/veiculos" class="action-card">
-        <div class="card-icon">☰</div>
+      <a
+        routerLink="/vendedores"
+        class="action-card"
+      >
+        <div class="card-icon">
+          V
+        </div>
 
         <div class="card-content">
-          <h2>Consultar veículos</h2>
+          <h2>Vendedores</h2>
 
           <p>
-            Visualize os veículos que já estão cadastrados no sistema.
+            Consulte, cadastre, edite e exclua
+            vendedores da concessionária.
           </p>
 
           <span class="card-link">
-            Ver veículos →
+            Gerenciar vendedores →
           </span>
         </div>
       </a>
 
-    </section>
+      <a
+        routerLink="/veiculos"
+        class="action-card"
+      >
+        <div class="card-icon">
+          +
+        </div>
 
-    <section class="security-info">
-      <span class="security-icon">✓</span>
+        <div class="card-content">
+          <h2>Veículos</h2>
 
-      <div>
-        <strong>Área protegida</strong>
+          <p>
+            Consulte, cadastre, edite e exclua
+            veículos novos e usados.
+          </p>
 
-        <p>
-          Esta área está disponível apenas para usuários autenticados.
-        </p>
-      </div>
+          <span class="card-link">
+            Gerenciar veículos →
+          </span>
+        </div>
+      </a>
+
+      <a
+        routerLink="/vendas"
+        class="action-card"
+      >
+        <div class="card-icon">
+          $
+        </div>
+
+        <div class="card-content">
+          <h2>Vendas</h2>
+
+          <p>
+            Consulte, registre, edite e exclua
+            vendas realizadas.
+          </p>
+
+          <span class="card-link">
+            Gerenciar vendas →
+          </span>
+        </div>
+      </a>
+
     </section>
 
   </main>

@@ -4,20 +4,22 @@
   <section class="veiculo-card">
 
     <header class="veiculo-header">
-      <span class="page-label">CONSULTA DE VEÍCULOS</span>
+      <span class="page-label">
+        GERENCIAMENTO DE VEÍCULOS
+      </span>
 
       <h1>Veículos cadastrados</h1>
 
       <p>
-        Consulte os veículos disponíveis no sistema.
+        Consulte, edite ou exclua os veículos do sistema.
       </p>
     </header>
 
     <p
-      class="loading-message"
-      *ngIf="carregando"
+      class="success-message"
+      *ngIf="mensagemSucesso"
     >
-      Carregando veículos...
+      {{ mensagemSucesso }}
     </p>
 
     <p
@@ -25,6 +27,13 @@
       *ngIf="mensagemErro"
     >
       {{ mensagemErro }}
+    </p>
+
+    <p
+      class="loading-message"
+      *ngIf="carregando"
+    >
+      Carregando veículos...
     </p>
 
     <div
@@ -42,43 +51,290 @@
       class="veiculos-lista"
       *ngIf="
         !carregando &&
-        !mensagemErro &&
         veiculos.length > 0
       "
     >
+
       <article
         class="veiculo-item"
         *ngFor="let veiculo of veiculos"
       >
-        <div class="veiculo-info">
 
-          <h2>
-            {{ veiculo.marca }} {{ veiculo.modelo }}
-          </h2>
+        <div
+          class="veiculo-info"
+          *ngIf="chassiEdicao !== veiculo.chassi"
+        >
+
+          <div class="item-header">
+            <div>
+              <h2>
+                {{ veiculo.marca }}
+                {{ veiculo.modelo }}
+              </h2>
+
+              <span class="chassi">
+                {{ veiculo.chassi }}
+              </span>
+            </div>
+
+            <span class="tipo-badge">
+              {{ veiculo.tipo }}
+            </span>
+          </div>
 
           <div class="veiculo-detalhes">
 
             <p>
-              <strong>Ano</strong>
-              <span>{{ veiculo.ano }}</span>
+              <strong>Cor</strong>
+              <span>{{ veiculo.cor }}</span>
             </p>
 
             <p>
-              <strong>Preço</strong>
-              <span>{{ veiculo.preco | currency:'BRL' }}</span>
+              <strong>Fabricação</strong>
+              <span>
+                {{
+                  veiculo.dataFabricacao
+                    | date:'dd/MM/yyyy'
+                }}
+              </span>
+            </p>
+
+            <p>
+              <strong>Valor</strong>
+              <span>
+                {{
+                  veiculo.valorVeiculo
+                    | currency:'BRL'
+                }}
+              </span>
             </p>
 
             <p>
               <strong>Status</strong>
               <span class="status">
-                {{ veiculo.status }}
+                {{ veiculo.statusDisponibilidade }}
+              </span>
+            </p>
+
+            <p *ngIf="veiculo.tipo === 'USADO'">
+              <strong>Placa</strong>
+              <span>{{ veiculo.placa }}</span>
+            </p>
+
+            <p *ngIf="veiculo.tipo === 'USADO'">
+              <strong>Quilometragem</strong>
+              <span>
+                {{
+                  veiculo.quilometragem
+                    | number:'1.0-0'
+                }}
+                km
               </span>
             </p>
 
           </div>
 
+          <div class="acoes">
+            <button
+              type="button"
+              class="edit-button"
+              (click)="iniciarEdicao(veiculo.chassi)"
+            >
+              Editar
+            </button>
+
+            <button
+              type="button"
+              class="delete-button"
+              [disabled]="
+                excluindoChassi === veiculo.chassi
+              "
+              (click)="excluir(veiculo)"
+            >
+              {{
+                excluindoChassi === veiculo.chassi
+                  ? 'Excluindo...'
+                  : 'Excluir'
+              }}
+            </button>
+          </div>
+
         </div>
+
+        <form
+          *ngIf="chassiEdicao === veiculo.chassi"
+          #formularioEdicao="ngForm"
+          (ngSubmit)="salvarEdicao(formularioEdicao)"
+          class="edicao-form"
+        >
+
+          <h2>Editar veículo</h2>
+
+          <p class="chassi-edicao">
+            Chassi: {{ veiculo.chassi }}
+          </p>
+
+          <div class="form-grid">
+
+            <div class="form-group">
+              <label>Marca</label>
+
+              <input
+                type="text"
+                name="marca"
+                [(ngModel)]="marca"
+                maxlength="50"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Modelo</label>
+
+              <input
+                type="text"
+                name="modelo"
+                [(ngModel)]="modelo"
+                maxlength="80"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Cor</label>
+
+              <input
+                type="text"
+                name="cor"
+                [(ngModel)]="cor"
+                maxlength="30"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Data de fabricação</label>
+
+              <input
+                type="date"
+                name="dataFabricacao"
+                [(ngModel)]="dataFabricacao"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Valor</label>
+
+              <input
+                type="number"
+                name="valorVeiculo"
+                [(ngModel)]="valorVeiculo"
+                min="0.01"
+                step="0.01"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Status</label>
+
+              <select
+                name="statusDisponibilidade"
+                [(ngModel)]="statusDisponibilidade"
+                required
+              >
+                <option value="disponivel">
+                  Disponível
+                </option>
+
+                <option value="reservado">
+                  Reservado
+                </option>
+
+                <option value="vendido">
+                  Vendido
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Tipo</label>
+
+              <select
+                name="tipo"
+                [(ngModel)]="tipo"
+                (ngModelChange)="alterarTipo()"
+                required
+              >
+                <option value="NOVO">
+                  Novo
+                </option>
+
+                <option value="USADO">
+                  Usado
+                </option>
+              </select>
+            </div>
+
+            <ng-container *ngIf="tipo === 'USADO'">
+
+              <div class="form-group">
+                <label>Placa</label>
+
+                <input
+                  type="text"
+                  name="placa"
+                  [(ngModel)]="placa"
+                  minlength="7"
+                  maxlength="7"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label>Quilometragem</label>
+
+                <input
+                  type="number"
+                  name="quilometragem"
+                  [(ngModel)]="quilometragem"
+                  min="0"
+                  required
+                />
+              </div>
+
+            </ng-container>
+
+          </div>
+
+          <div class="acoes-edicao">
+            <button
+              type="button"
+              class="cancel-button"
+              (click)="cancelarEdicao()"
+              [disabled]="salvando"
+            >
+              Cancelar
+            </button>
+
+            <button
+              type="submit"
+              class="save-button"
+              [disabled]="salvando"
+            >
+              {{
+                salvando
+                  ? 'Salvando...'
+                  : 'Salvar alterações'
+              }}
+            </button>
+          </div>
+
+        </form>
+
       </article>
+
     </div>
 
   </section>

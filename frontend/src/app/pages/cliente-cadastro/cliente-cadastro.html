@@ -1,0 +1,217 @@
+<app-navbar></app-navbar>
+
+<main class="cliente-page">
+  <section class="cliente-card">
+
+    <header class="cliente-header">
+      <span class="page-label">
+        CADASTRO DE CLIENTE
+      </span>
+
+      <h1>Cadastrar cliente</h1>
+
+      <p>
+        Informe os dados do cliente para adicioná-lo
+        ao sistema.
+      </p>
+    </header>
+
+    <form
+      class="cliente-form"
+      #formulario="ngForm"
+      (ngSubmit)="cadastrar(formulario)"
+      autocomplete="off"
+    >
+
+      <div class="form-group">
+        <label for="tipo">Tipo de cliente</label>
+
+        <select
+          id="tipo"
+          name="tipo"
+          [(ngModel)]="tipo"
+          (ngModelChange)="alterarTipo()"
+          required
+          [disabled]="enviando"
+        >
+          <option value="FISICA">
+            Pessoa física
+          </option>
+
+          <option value="JURIDICA">
+            Pessoa jurídica
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="nome">Nome</label>
+
+        <input
+          id="nome"
+          type="text"
+          name="nome"
+          [(ngModel)]="nome"
+          maxlength="120"
+          placeholder="Nome completo ou razão social"
+          required
+          [disabled]="enviando"
+        />
+      </div>
+
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="email">E-mail</label>
+
+          <input
+            id="email"
+            type="email"
+            name="email"
+            [(ngModel)]="email"
+            maxlength="150"
+            placeholder="cliente@email.com"
+            required
+            email
+            [disabled]="enviando"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="telefone">Telefone</label>
+
+          <input
+            id="telefone"
+            type="text"
+            name="telefone"
+            [(ngModel)]="telefone"
+            maxlength="20"
+            placeholder="81999998888"
+            required
+            [disabled]="enviando"
+          />
+        </div>
+
+      </div>
+
+      <div
+        class="form-group"
+        *ngIf="tipo === 'FISICA'"
+      >
+        <label for="cpf">CPF</label>
+
+        <input
+          id="cpf"
+          type="text"
+          name="cpf"
+          [(ngModel)]="cpf"
+          minlength="11"
+          maxlength="11"
+          pattern="[0-9]{11}"
+          placeholder="Somente números"
+          required
+          [disabled]="enviando"
+        />
+      </div>
+
+      <div
+        class="form-group"
+        *ngIf="tipo === 'JURIDICA'"
+      >
+        <label for="cnpj">CNPJ</label>
+
+        <input
+          id="cnpj"
+          type="text"
+          name="cnpj"
+          [(ngModel)]="cnpj"
+          minlength="14"
+          maxlength="14"
+          pattern="[0-9]{14}"
+          placeholder="Somente números"
+          required
+          [disabled]="enviando"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="rua">Rua</label>
+
+        <input
+          id="rua"
+          type="text"
+          name="rua"
+          [(ngModel)]="rua"
+          maxlength="150"
+          placeholder="Ex.: Rua das Flores"
+          required
+          [disabled]="enviando"
+        />
+      </div>
+
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="numero">Número</label>
+
+          <input
+            id="numero"
+            type="text"
+            name="numero"
+            [(ngModel)]="numero"
+            maxlength="10"
+            placeholder="Ex.: 145"
+            required
+            [disabled]="enviando"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="cep">CEP</label>
+
+          <input
+            id="cep"
+            type="text"
+            name="cep"
+            [(ngModel)]="cep"
+            minlength="8"
+            maxlength="8"
+            pattern="[0-9]{8}"
+            placeholder="Somente números"
+            required
+            [disabled]="enviando"
+          />
+        </div>
+
+      </div>
+
+      <p
+        class="error-message"
+        *ngIf="mensagemErro"
+      >
+        {{ mensagemErro }}
+      </p>
+
+      <p
+        class="success-message"
+        *ngIf="mensagemSucesso"
+      >
+        {{ mensagemSucesso }}
+      </p>
+
+      <button
+        type="submit"
+        class="submit-button"
+        [disabled]="enviando"
+      >
+        {{
+          enviando
+            ? 'Cadastrando...'
+            : 'Cadastrar cliente'
+        }}
+      </button>
+
+    </form>
+
+  </section>
+</main>

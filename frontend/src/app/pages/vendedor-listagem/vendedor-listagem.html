@@ -1,0 +1,190 @@
+<app-navbar></app-navbar>
+
+<main class="vendedor-page">
+  <section class="vendedor-card">
+
+    <header class="vendedor-header">
+      <span class="page-label">
+        GERENCIAMENTO DE VENDEDORES
+      </span>
+
+      <h1>Vendedores cadastrados</h1>
+
+      <p>
+        Consulte, edite ou exclua vendedores do sistema.
+      </p>
+    </header>
+
+    <p
+      class="success-message"
+      *ngIf="mensagemSucesso"
+    >
+      {{ mensagemSucesso }}
+    </p>
+
+    <p
+      class="error-message"
+      *ngIf="mensagemErro"
+    >
+      {{ mensagemErro }}
+    </p>
+
+    <p
+      class="loading-message"
+      *ngIf="carregando"
+    >
+      Carregando vendedores...
+    </p>
+
+    <div
+      class="empty-message"
+      *ngIf="
+        !carregando &&
+        !mensagemErro &&
+        vendedores.length === 0
+      "
+    >
+      Nenhum vendedor cadastrado.
+    </div>
+
+    <div
+      class="vendedores-lista"
+      *ngIf="
+        !carregando &&
+        vendedores.length > 0
+      "
+    >
+      <article
+        class="vendedor-item"
+        *ngFor="let vendedor of vendedores"
+      >
+
+        <div
+          *ngIf="
+            matriculaEdicao !== vendedor.matricula
+          "
+        >
+          <div class="item-header">
+            <div>
+              <h2>
+                {{ vendedor.nome }}
+              </h2>
+
+              <span class="identificador">
+                Matrícula #{{ vendedor.matricula }}
+              </span>
+            </div>
+          </div>
+
+          <div class="vendedor-detalhes">
+
+            <p>
+              <strong>CPF</strong>
+              <span>{{ vendedor.cpf }}</span>
+            </p>
+
+          </div>
+
+          <div class="acoes">
+            <button
+              type="button"
+              class="edit-button"
+              (click)="
+                iniciarEdicao(vendedor.matricula)
+              "
+            >
+              Editar
+            </button>
+
+            <button
+              type="button"
+              class="delete-button"
+              [disabled]="
+                excluindoMatricula === vendedor.matricula
+              "
+              (click)="excluir(vendedor)"
+            >
+              {{
+                excluindoMatricula === vendedor.matricula
+                  ? 'Excluindo...'
+                  : 'Excluir'
+              }}
+            </button>
+          </div>
+        </div>
+
+        <form
+          *ngIf="
+            matriculaEdicao === vendedor.matricula
+          "
+          #formularioEdicao="ngForm"
+          (ngSubmit)="
+            salvarEdicao(formularioEdicao)
+          "
+          class="edicao-form"
+        >
+          <h2>Editar vendedor</h2>
+
+          <p class="identificador">
+            Matrícula #{{ vendedor.matricula }}
+          </p>
+
+          <div class="form-grid">
+
+            <div class="form-group">
+              <label>Nome</label>
+
+              <input
+                type="text"
+                name="nome"
+                [(ngModel)]="nome"
+                maxlength="120"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label>CPF</label>
+
+              <input
+                type="text"
+                name="cpf"
+                [(ngModel)]="cpf"
+                minlength="11"
+                maxlength="11"
+                pattern="[0-9]{11}"
+                required
+              />
+            </div>
+
+          </div>
+
+          <div class="acoes-edicao">
+            <button
+              type="button"
+              class="cancel-button"
+              (click)="cancelarEdicao()"
+              [disabled]="salvando"
+            >
+              Cancelar
+            </button>
+
+            <button
+              type="submit"
+              class="save-button"
+              [disabled]="salvando"
+            >
+              {{
+                salvando
+                  ? 'Salvando...'
+                  : 'Salvar alterações'
+              }}
+            </button>
+          </div>
+        </form>
+
+      </article>
+    </div>
+
+  </section>
+</main>

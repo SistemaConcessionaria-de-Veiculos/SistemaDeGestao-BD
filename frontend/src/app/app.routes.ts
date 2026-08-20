@@ -1,53 +1,69 @@
 import { Routes } from '@angular/router';
 
-import { authGuard } from './core/guards/auth-guard';
-import { roleGuard } from './core/guards/role-guard';
-import { Admin } from './pages/admin/admin';
 import { Dashboard } from './pages/dashboard/dashboard';
-import { Login } from './pages/login/login';
-import { Register } from './pages/register/register';
+
+import { ClienteCadastro } from './pages/cliente-cadastro/cliente-cadastro';
+import { ClienteListagem } from './pages/cliente-listagem/cliente-listagem';
+
+import { VendedorCadastro } from './pages/vendedor-cadastro/vendedor-cadastro';
+import { VendedorListagem } from './pages/vendedor-listagem/vendedor-listagem';
+
 import { VeiculoCadastro } from './pages/veiculo-cadastro/veiculo-cadastro';
 import { VeiculoListagem } from './pages/veiculo-listagem/veiculo-listagem';
 
+import { VendaCadastro } from './pages/venda-cadastro/venda-cadastro';
+import { VendaListagem } from './pages/venda-listagem/venda-listagem';
+
 export const routes: Routes = [
-  {
-    path: 'login',
-    component: Login,
-  },
-  {
-    path: 'register',
-    component: Register,
-  },
   {
     path: 'dashboard',
     component: Dashboard,
-    canActivate: [authGuard],
   },
+
+  {
+    path: 'clientes/cadastro',
+    component: ClienteCadastro,
+  },
+  {
+    path: 'clientes',
+    component: ClienteListagem,
+  },
+
+  {
+    path: 'vendedores/cadastro',
+    component: VendedorCadastro,
+  },
+  {
+    path: 'vendedores',
+    component: VendedorListagem,
+  },
+
   {
     path: 'veiculos/cadastro',
     component: VeiculoCadastro,
-    canActivate: [authGuard],
   },
   {
     path: 'veiculos',
     component: VeiculoListagem,
-    canActivate: [authGuard],
+  },
+
+  {
+    path: 'vendas/cadastro',
+    component: VendaCadastro,
   },
   {
-    path: 'admin',
-    component: Admin,
-    canActivate: [authGuard, roleGuard],
-    data: {
-      roles: ['ADMIN'],
-    },
+    path: 'vendas',
+    component: VendaListagem,
   },
+
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'login',
+    redirectTo: 'dashboard',
   },
+
   {
     path: '**',
-    redirectTo: 'login',
+    redirectTo: 'dashboard',
   },
 ];
