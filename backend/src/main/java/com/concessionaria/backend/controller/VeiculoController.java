@@ -4,12 +4,16 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.concessionaria.backend.dto.VeiculoAtualizacaoRequest;
 import com.concessionaria.backend.dto.VeiculoCadastroRequest;
 import com.concessionaria.backend.dto.VeiculoListagemResponse;
 import com.concessionaria.backend.dto.VeiculoResponse;
@@ -29,16 +33,46 @@ public class VeiculoController {
 
     @PostMapping
     public ResponseEntity<VeiculoResponse> cadastrar(
-            @Valid @RequestBody VeiculoCadastroRequest request
-    ) {
+            @Valid @RequestBody VeiculoCadastroRequest request) {
+
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(veiculoService.cadastrar(request));
     }
 
-    // Ricardo - endpoint responsável pela consulta dos veículos cadastrados.
+    // Mantém a funcionalidade de consulta/listagem já existente.
     @GetMapping
     public ResponseEntity<List<VeiculoListagemResponse>> listarVeiculos() {
-        return ResponseEntity.ok(veiculoService.listarVeiculos());
+        return ResponseEntity.ok(
+                veiculoService.listarVeiculos()
+        );
+    }
+
+    @GetMapping("/{chassi}")
+    public ResponseEntity<VeiculoResponse> buscarPorChassi(
+            @PathVariable String chassi) {
+
+        return ResponseEntity.ok(
+                veiculoService.buscarPorChassi(chassi)
+        );
+    }
+
+    @PutMapping("/{chassi}")
+    public ResponseEntity<VeiculoResponse> atualizar(
+            @PathVariable String chassi,
+            @Valid @RequestBody VeiculoAtualizacaoRequest request) {
+
+        return ResponseEntity.ok(
+                veiculoService.atualizar(chassi, request)
+        );
+    }
+
+    @DeleteMapping("/{chassi}")
+    public ResponseEntity<Void> excluir(
+            @PathVariable String chassi) {
+
+        veiculoService.excluir(chassi);
+
+        return ResponseEntity.noContent().build();
     }
 }

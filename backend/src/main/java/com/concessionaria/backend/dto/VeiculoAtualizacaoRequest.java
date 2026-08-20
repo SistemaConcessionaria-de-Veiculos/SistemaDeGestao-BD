@@ -12,11 +12,7 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 
-public record VeiculoCadastroRequest(
-
-        @NotBlank(message = "O chassi é obrigatório")
-        @Size(min = 17, max = 17, message = "O chassi deve conter 17 caracteres")
-        String chassi,
+public record VeiculoAtualizacaoRequest(
 
         Long numeroNota,
 

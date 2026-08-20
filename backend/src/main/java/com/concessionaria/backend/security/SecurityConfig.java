@@ -41,11 +41,11 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                
-                // As histórias da 3ª iteração exigem funcionário autenticado, sem Role específica.
-                .requestMatchers(HttpMethod.POST, "/api/veiculos").authenticated()
-                .requestMatchers(HttpMethod.GET, "/api/veiculos").authenticated()
-                
+                .requestMatchers("/api/clientes/**").permitAll()
+                .requestMatchers("/api/vendedores/**").permitAll()
+                .requestMatchers("/api/veiculos/**").permitAll()
+                .requestMatchers("/api/vendas/**").permitAll()
+
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session

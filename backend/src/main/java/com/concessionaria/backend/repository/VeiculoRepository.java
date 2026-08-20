@@ -1,11 +1,15 @@
 package com.concessionaria.backend.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import java.util.List;
 
 import com.concessionaria.backend.model.Veiculo;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import org.springframework.stereotype.Repository;
+
 @Repository
-public interface VeiculoRepository extends JpaRepository<Veiculo, Long> {
-    // Métodos herdados do JpaRepository já bastam para o POST e o GET dessa iteração.
+public interface VeiculoRepository extends JpaRepository<Veiculo, String> {
+
+    List<Veiculo> findByNumeroNota(Long numeroNota);
 }
