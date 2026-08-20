@@ -9,6 +9,7 @@ import { FormsModule, NgForm } from '@angular/forms';
 import { Navbar } from '../../components/navbar/navbar';
 import {
   StatusVeiculo,
+  TipoVeiculo,
   VeiculoCadastroRequest,
 } from '../../core/models/veiculo';
 import { VeiculoService } from '../../core/services/veiculo';
@@ -20,13 +21,17 @@ import { VeiculoService } from '../../core/services/veiculo';
   styleUrl: './veiculo-cadastro.css',
 })
 export class VeiculoCadastro {
+  chassi = '';
+  numeroNota: number | null = null;
   marca = '';
   modelo = '';
-  ano: number | null = null;
   cor = '';
+  dataFabricacao = '';
+  statusDisponibilidade: StatusVeiculo = 'disponivel';
+  valorVeiculo: number | null = null;
+  tipo: TipoVeiculo = 'NOVO';
+  placa = '';
   quilometragem: number | null = null;
-  preco: number | null = null;
-  status: StatusVeiculo = 'DISPONIVEL';
 
   mensagemSucesso = '';
   mensagemErro = '';
@@ -37,29 +42,54 @@ export class VeiculoCadastro {
     private readonly changeDetector: ChangeDetectorRef,
   ) {}
 
-  // Ricardo - envia o formulário de cadastro de veículo para o backend.
   cadastrar(formulario: NgForm): void {
     this.mensagemSucesso = '';
     this.mensagemErro = '';
 
     if (
       formulario.invalid ||
-      this.ano === null ||
-      this.preco === null
+      this.chassi.trim().length !== 17 ||
+      !this.dataFabricacao ||
+      this.valorVeiculo === null ||
+      this.valorVeiculo <= 0
     ) {
       formulario.control.markAllAsTouched();
-      this.mensagemErro = 'Preencha os campos obrigatórios corretamente.';
+      this.mensagemErro =
+        'Preencha os campos obrigatórios corretamente.';
+      return;
+    }
+
+    if (
+      this.tipo === 'USADO' &&
+      (
+        this.placa.trim().length !== 7 ||
+        this.quilometragem === null ||
+        this.quilometragem < 0
+      )
+    ) {
+      this.mensagemErro =
+        'Veículos usados devem possuir placa com 7 caracteres e quilometragem válida.';
       return;
     }
 
     const dados: VeiculoCadastroRequest = {
+      chassi: this.chassi.trim().toUpperCase(),
+      numeroNota: this.numeroNota,
       marca: this.marca.trim(),
       modelo: this.modelo.trim(),
-      ano: this.ano,
-      cor: this.cor.trim() || undefined,
-      quilometragem: this.quilometragem ?? undefined,
-      preco: this.preco,
-      status: this.status,
+      cor: this.cor.trim(),
+      dataFabricacao: this.dataFabricacao,
+      statusDisponibilidade: this.statusDisponibilidade,
+      valorVeiculo: this.valorVeiculo,
+      tipo: this.tipo,
+      placa:
+        this.tipo === 'USADO'
+          ? this.placa.trim().toUpperCase()
+          : null,
+      quilometragem:
+        this.tipo === 'USADO'
+          ? this.quilometragem
+          : null,
     };
 
     this.enviando = true;
@@ -68,56 +98,89 @@ export class VeiculoCadastro {
       next: () => {
         this.enviando = false;
         this.mensagemErro = '';
-        this.mensagemSucesso = 'Veículo cadastrado com sucesso.';
+        this.mensagemSucesso =
+          'Veículo cadastrado com sucesso.';
 
         formulario.resetForm({
+          chassi: '',
+          numeroNota: null,
           marca: '',
           modelo: '',
-          ano: null,
           cor: '',
+          dataFabricacao: '',
+          statusDisponibilidade: 'disponivel',
+          valorVeiculo: null,
+          tipo: 'NOVO',
+          placa: '',
           quilometragem: null,
-          preco: null,
-          status: 'DISPONIVEL',
         });
-
-        this.marca = '';
-        this.modelo = '';
-        this.ano = null;
-        this.cor = '';
-        this.quilometragem = null;
-        this.preco = null;
-        this.status = 'DISPONIVEL';
 
         this.changeDetector.detectChanges();
       },
 
       error: (error: HttpErrorResponse) => {
         this.enviando = false;
-
-        if (error.status === 400) {
-          this.mensagemErro = this.obterMensagemErro(error);
-        } else if (error.status === 401) {
-          this.mensagemErro = 'Sua sessão expirou. Faça login novamente.';
-        } else if (error.status === 403) {
-          this.mensagemErro = 'Você não possui permissão para cadastrar veículos.';
-        } else if (error.status === 0) {
-          this.mensagemErro = 'Não foi possível conectar ao servidor.';
-        } else {
-          this.mensagemErro = 'Não foi possível cadastrar o veículo.';
-        }
-
+        this.mensagemErro = this.obterMensagemErro(error);
         this.changeDetector.detectChanges();
       },
     });
   }
 
-  private obterMensagemErro(error: HttpErrorResponse): string {
+  alterarTipo(): void {
+    if (this.tipo === 'NOVO') {
+      this.placa = '';
+      this.quilometragem = null;
+    }
+  }
+
+  private obterMensagemErro(
+    error: HttpErrorResponse,
+  ): string {
+    if (error.status === 0) {
+      return 'Não foi possível conectar ao servidor.';
+    }
+
+    if (error.status === 409) {
+      return this.extrairMensagem(
+        error,
+        'Já existe um veículo com o chassi ou placa informados.',
+      );
+    }
+
+    if (error.status === 400) {
+      return this.extrairMensagem(
+        error,
+        'Verifique os dados informados.',
+      );
+    }
+
+    if (error.status === 404) {
+      return this.extrairMensagem(
+        error,
+        'Registro relacionado não encontrado.',
+      );
+    }
+
+    return 'Não foi possível cadastrar o veículo.';
+  }
+
+  private extrairMensagem(
+    error: HttpErrorResponse,
+    padrao: string,
+  ): string {
     if (!error.error) {
-      return 'Verifique os dados informados.';
+      return padrao;
     }
 
     if (typeof error.error === 'string') {
       return error.error;
+    }
+
+    if (
+      typeof error.error === 'object' &&
+      typeof error.error.erro === 'string'
+    ) {
+      return error.error.erro;
     }
 
     const mensagens = Object.values(error.error)
@@ -127,6 +190,6 @@ export class VeiculoCadastro {
       )
       .join(' ');
 
-    return mensagens || 'Verifique os dados informados.';
+    return mensagens || padrao;
   }
 }

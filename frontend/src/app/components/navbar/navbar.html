@@ -1,6 +1,13 @@
 <header class="topbar">
-  <div class="brand" routerLink="/dashboard">
-    <span class="brand-icon">🚘</span>
+  <div
+    class="brand"
+    routerLink="/dashboard"
+  >
+    <img
+      src="/images/carro-navbar.png"
+      alt="Carro da concessionária"
+      class="brand-logo"
+    />
 
     <div>
       <strong>Concessionária</strong>
@@ -9,6 +16,7 @@
   </div>
 
   <nav class="navigation">
+
     <a
       routerLink="/dashboard"
       routerLinkActive="active"
@@ -19,11 +27,37 @@
     </a>
 
     <a
-      routerLink="/veiculos/cadastro"
+      routerLink="/clientes"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      class="nav-link"
+    >
+      Clientes
+    </a>
+
+    <a
+      routerLink="/clientes/cadastro"
       routerLinkActive="active"
       class="nav-link"
     >
-      Cadastrar veículo
+      Novo cliente
+    </a>
+
+    <a
+      routerLink="/vendedores"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      class="nav-link"
+    >
+      Vendedores
+    </a>
+
+    <a
+      routerLink="/vendedores/cadastro"
+      routerLinkActive="active"
+      class="nav-link"
+    >
+      Novo vendedor
     </a>
 
     <a
@@ -32,15 +66,33 @@
       [routerLinkActiveOptions]="{ exact: true }"
       class="nav-link"
     >
-      Consultar veículos
+      Veículos
     </a>
 
-    <button
-      type="button"
-      class="logout-button"
-      (click)="logout()"
+    <a
+      routerLink="/veiculos/cadastro"
+      routerLinkActive="active"
+      class="nav-link"
     >
-      Sair
-    </button>
+      Novo veículo
+    </a>
+
+    <a
+      routerLink="/vendas"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      class="nav-link"
+    >
+      Vendas
+    </a>
+
+    <a
+      routerLink="/vendas/cadastro"
+      routerLinkActive="active"
+      class="nav-link"
+    >
+      Nova venda
+    </a>
+
   </nav>
 </header>
