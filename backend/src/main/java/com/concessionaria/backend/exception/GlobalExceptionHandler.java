@@ -135,4 +135,15 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.CONFLICT)
                 .body(error);
     }
+    @ExceptionHandler(VeiculoJaVinculadoVendaException.class)
+        public ResponseEntity<Map<String, String>> handleVeiculoJaVinculadoVenda(
+        VeiculoJaVinculadoVendaException exception
+        ) {
+        Map<String, String> error = new LinkedHashMap<>();
+        error.put("erro", exception.getMessage());
+
+        return ResponseEntity
+            .status(HttpStatus.CONFLICT)
+            .body(error);
+}
 }

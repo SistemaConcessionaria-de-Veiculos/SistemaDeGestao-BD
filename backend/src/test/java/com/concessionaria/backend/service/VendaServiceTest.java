@@ -4,9 +4,13 @@ import com.concessionaria.backend.dto.VendaAtualizacaoRequest;
 import com.concessionaria.backend.dto.VendaCadastroRequest;
 import com.concessionaria.backend.dto.VendaResponse;
 import com.concessionaria.backend.model.Venda;
+import com.concessionaria.backend.exception.VeiculoJaVinculadoVendaException;
+import com.concessionaria.backend.model.StatusVeiculo;
+import com.concessionaria.backend.model.Veiculo;
 import com.concessionaria.backend.repository.ClienteRepository;
 import com.concessionaria.backend.repository.VendaRepository;
 import com.concessionaria.backend.repository.VendedorRepository;
+import com.concessionaria.backend.repository.VeiculoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,17 +40,19 @@ class VendaServiceTest {
 
     @Mock
     private VendedorRepository vendedorRepository;
-
+    @Mock
+    private VeiculoRepository veiculoRepository;
     private VendaService vendaService;
 
     @BeforeEach
     void configurar() {
         vendaService = new VendaService(
-                vendaRepository,
-                clienteRepository,
-                vendedorRepository
-        );
-    }
+            vendaRepository,
+            clienteRepository,
+            vendedorRepository,
+            veiculoRepository
+    );
+}
 
     @Test
     void deveCadastrarVendaValida() {
@@ -182,6 +188,173 @@ class VendaServiceTest {
 
         verify(vendaRepository).delete(venda);
     }
+
+    @Test
+    void deveCadastrarVendaEVincularVeiculo() {
+    String chassi = "9BWZZZ377VT004251";
+
+    VendaCadastroRequest request = new VendaCadastroRequest(
+            1,
+            1,
+            new BigDecimal("145000.00"),
+            LocalDate.of(2026, 8, 20),
+            List.of(chassi)
+    );
+
+    Veiculo veiculo = new Veiculo(
+            chassi,
+            null,
+            "Toyota",
+            "Corolla",
+            "Prata",
+            LocalDate.of(2025, 1, 10),
+            StatusVeiculo.DISPONIVEL,
+            new BigDecimal("145000.00")
+    );
+
+    when(clienteRepository.existsById(1))
+            .thenReturn(true);
+
+    when(vendedorRepository.existsById(1))
+            .thenReturn(true);
+
+    when(vendaRepository.save(any(Venda.class)))
+            .thenAnswer(invocacao -> {
+                Venda venda = invocacao.getArgument(0);
+                venda.setNumeroNota(60L);
+                return venda;
+            });
+
+    when(veiculoRepository.findById(chassi))
+            .thenReturn(Optional.of(veiculo));
+
+    when(veiculoRepository.findByNumeroNota(60L))
+            .thenReturn(List.of(veiculo));
+
+    VendaResponse resposta = vendaService.cadastrar(request);
+
+    assertThat(veiculo.getNumeroNota())
+            .isEqualTo(60L);
+
+    assertThat(resposta.chassis())
+            .containsExactly(chassi);
+}
+    @Test
+    void deveRejeitarVeiculoVinculadoAOutraVenda() {
+    String chassi = "9BG116GW04C400001";
+
+    VendaCadastroRequest request = new VendaCadastroRequest(
+            1,
+            1,
+            new BigDecimal("95000.00"),
+            LocalDate.of(2026, 8, 20),
+            List.of(chassi)
+    );
+
+    Veiculo veiculo = new Veiculo(
+            chassi,
+            99L,
+            "Honda",
+            "Civic",
+            "Preto",
+            LocalDate.of(2023, 5, 15),
+            StatusVeiculo.DISPONIVEL,
+            new BigDecimal("95000.00")
+    );
+
+    when(clienteRepository.existsById(1))
+            .thenReturn(true);
+
+    when(vendedorRepository.existsById(1))
+            .thenReturn(true);
+
+    when(vendaRepository.save(any(Venda.class)))
+            .thenAnswer(invocacao -> {
+                Venda venda = invocacao.getArgument(0);
+                venda.setNumeroNota(61L);
+                return venda;
+            });
+
+    when(veiculoRepository.findById(chassi))
+            .thenReturn(Optional.of(veiculo));
+
+    assertThatThrownBy(() -> vendaService.cadastrar(request))
+            .isInstanceOf(VeiculoJaVinculadoVendaException.class)
+            .hasMessage(
+                    "Veículo já vinculado a outra venda: " + chassi
+            );
+}
+    @Test
+    void deveAtualizarVinculosDosVeiculosDaVenda() {
+    String chassiAntigo = "9BWZZZ377VT004251";
+    String chassiNovo = "9BG116GW04C400001";
+
+    Venda venda = criarVenda(30L);
+
+    Veiculo veiculoAntigo = new Veiculo(
+            chassiAntigo,
+            30L,
+            "Toyota",
+            "Corolla",
+            "Prata",
+            LocalDate.of(2024, 1, 10),
+            StatusVeiculo.DISPONIVEL,
+            new BigDecimal("120000.00")
+    );
+
+    Veiculo veiculoNovo = new Veiculo(
+            chassiNovo,
+            null,
+            "Honda",
+            "Civic",
+            "Preto",
+            LocalDate.of(2024, 2, 15),
+            StatusVeiculo.DISPONIVEL,
+            new BigDecimal("130000.00")
+    );
+
+    when(vendaRepository.findById(30L))
+            .thenReturn(Optional.of(venda));
+
+    when(clienteRepository.existsById(2))
+            .thenReturn(true);
+
+    when(vendedorRepository.existsById(2))
+            .thenReturn(true);
+
+    when(vendaRepository.save(any(Venda.class)))
+            .thenAnswer(invocacao -> invocacao.getArgument(0));
+
+    when(veiculoRepository.findByNumeroNota(30L))
+            .thenReturn(
+                    List.of(veiculoAntigo),
+                    List.of(veiculoNovo)
+            );
+
+    when(veiculoRepository.findById(chassiNovo))
+            .thenReturn(Optional.of(veiculoNovo));
+
+    VendaAtualizacaoRequest request =
+            new VendaAtualizacaoRequest(
+                    2,
+                    2,
+                    new BigDecimal("130000.00"),
+                    LocalDate.of(2026, 8, 21),
+                    List.of(chassiNovo)
+            );
+
+    VendaResponse resposta =
+            vendaService.atualizar(30L, request);
+
+    assertThat(veiculoAntigo.getNumeroNota())
+            .isNull();
+
+    assertThat(veiculoNovo.getNumeroNota())
+            .isEqualTo(30L);
+
+    assertThat(resposta.chassis())
+            .containsExactly(chassiNovo);
+}
 
     private Venda criarVenda(Long numeroNota) {
         Venda venda = new Venda(

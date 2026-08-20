@@ -1,8 +1,8 @@
-# API REST — Backend CRUD
+# API REST - Backend CRUD
 
-## Entrega 2 — Sistema de Gestão para Concessionária de Veículos
+## Entrega 2 - Sistema de Gestão para Concessionária de Veículos
 
-Esta documentação descreve os contratos REST implementados no backend da Entrega 2 para as tabelas principais do banco oficial: **CLIENTES**, **VENDEDORES**, **VEICULOS** e **VENDAS**.
+Esta documentação consolida os contratos REST implementados no backend da Entrega 2 para as tabelas principais do banco oficial: **CLIENTES**, **VENDEDORES**, **VEÍCULOS** e **VENDAS**.
 
 O backend utiliza o esquema SQL oficial da disciplina e mantém:
 
@@ -10,7 +10,7 @@ O backend utiliza o esquema SQL oficial da disciplina e mantém:
 spring.jpa.hibernate.ddl-auto=none
 ```
 
-O Hibernate não deve criar nem alterar tabelas do banco.
+O Hibernate não cria nem altera as tabelas do banco. As entidades JPA foram mapeadas para trabalhar sobre o esquema existente.
 
 ## Base URL
 
@@ -20,7 +20,7 @@ Ambiente local:
 http://localhost:8080
 ```
 
-Os endpoints abaixo utilizam o prefixo `/api`.
+Os endpoints descritos abaixo utilizam o prefixo `/api`.
 
 ---
 
@@ -32,10 +32,12 @@ Base:
 /api/clientes
 ```
 
-O cadastro de clientes respeita as especializações:
+O cadastro de clientes respeita as especializações do banco:
 
-- `FISICA` → registro em `clientes` + `pessoas_fisicas`;
-- `JURIDICA` → registro em `clientes` + `pessoas_juridicas`.
+- `FISICA` -> registro em `clientes` + `pessoas_fisicas`;
+- `JURIDICA` -> registro em `clientes` + `pessoas_juridicas`.
+
+As operações que envolvem a tabela principal e a especialização são executadas de forma transacional.
 
 ## POST `/api/clientes`
 
@@ -48,7 +50,7 @@ Cadastra um cliente.
   "nome": "Mariana Albuquerque",
   "email": "mariana.albuquerque@example.com",
   "telefone": "81999998888",
-  "rua": "Rua das Acácias",
+  "rua": "Rua das Acacias",
   "numero": "145",
   "cep": "50000000",
   "tipo": "FISICA",
@@ -61,7 +63,7 @@ Cadastra um cliente.
 
 ```json
 {
-  "nome": "Autovale Comércio de Veículos Ltda",
+  "nome": "Autovale Comercio de Veiculos Ltda",
   "email": "contato@autovale.com.br",
   "telefone": "8133334455",
   "rua": "Avenida Norte",
@@ -75,9 +77,9 @@ Cadastra um cliente.
 
 ### Respostas principais
 
-- `201 Created` — cliente cadastrado;
-- `400 Bad Request` — dados inválidos ou especialização inconsistente;
-- `409 Conflict` — CPF ou CNPJ já cadastrado.
+- `201 Created` - cliente cadastrado;
+- `400 Bad Request` - dados inválidos ou especialização inconsistente;
+- `409 Conflict` - CPF ou CNPJ já cadastrado.
 
 ## GET `/api/clientes`
 
@@ -89,14 +91,14 @@ Busca um cliente pelo identificador.
 
 ### Respostas principais
 
-- `200 OK` — cliente encontrado;
-- `404 Not Found` — cliente inexistente.
+- `200 OK` - cliente encontrado;
+- `404 Not Found` - cliente inexistente.
 
 ## PUT `/api/clientes/{idCliente}`
 
 Atualiza os dados do cliente.
 
-O `idCliente` permanece o mesmo. A operação também pode atualizar a especialização PF/PJ de forma transacional.
+O `idCliente` permanece o mesmo. A operação também pode alterar a especialização PF/PJ de forma transacional.
 
 ## DELETE `/api/clientes/{idCliente}`
 
@@ -104,9 +106,9 @@ Exclui o cliente e sua especialização.
 
 ### Respostas principais
 
-- `204 No Content` — exclusão realizada;
-- `404 Not Found` — cliente inexistente;
-- `409 Conflict` — existem registros vinculados que impedem a exclusão.
+- `204 No Content` - exclusão realizada;
+- `404 Not Found` - cliente inexistente;
+- `409 Conflict` - existem registros vinculados que impedem a exclusão.
 
 ---
 
@@ -143,9 +145,9 @@ Cadastra um vendedor.
 
 ### Respostas principais
 
-- `201 Created` — vendedor cadastrado;
-- `400 Bad Request` — nome/CPF inválidos;
-- `409 Conflict` — CPF já cadastrado.
+- `201 Created` - vendedor cadastrado;
+- `400 Bad Request` - nome ou CPF inválidos;
+- `409 Conflict` - CPF já cadastrado.
 
 ## GET `/api/vendedores`
 
@@ -157,8 +159,8 @@ Busca um vendedor pela matrícula.
 
 ### Respostas principais
 
-- `200 OK` — vendedor encontrado;
-- `404 Not Found` — vendedor inexistente.
+- `200 OK` - vendedor encontrado;
+- `404 Not Found` - vendedor inexistente.
 
 ## PUT `/api/vendedores/{matricula}`
 
@@ -170,9 +172,9 @@ Exclui o vendedor.
 
 ### Respostas principais
 
-- `204 No Content` — exclusão realizada;
-- `404 Not Found` — vendedor inexistente;
-- `409 Conflict` — vendedor possui registros vinculados, por exemplo vendas.
+- `204 No Content` - exclusão realizada;
+- `404 Not Found` - vendedor inexistente;
+- `409 Conflict` - vendedor possui registros vinculados, como vendas.
 
 ---
 
@@ -189,7 +191,8 @@ O modelo segue o DDL oficial:
 - `veiculos` usa `chassi` como chave primária;
 - `veiculos_novos` representa veículos novos;
 - `veiculos_usados` representa veículos usados;
-- placa e quilometragem pertencem somente a veículos usados.
+- placa e quilometragem pertencem somente a veículos usados;
+- `veiculos.numero_nota` representa a associação do veículo com uma venda.
 
 Status aceitos:
 
@@ -248,13 +251,13 @@ Para `USADO`:
 
 - `placa` é obrigatória;
 - `quilometragem` é obrigatória;
-- placa deve ser única.
+- a placa deve ser única.
 
 ### Respostas principais
 
-- `201 Created` — veículo cadastrado;
-- `400 Bad Request` — dados inválidos ou combinação NOVO/USADO inconsistente;
-- `409 Conflict` — chassi ou placa já cadastrados.
+- `201 Created` - veículo cadastrado;
+- `400 Bad Request` - dados inválidos ou combinação NOVO/USADO inconsistente;
+- `409 Conflict` - chassi ou placa já cadastrados.
 
 ## GET `/api/veiculos`
 
@@ -266,8 +269,8 @@ Busca um veículo pelo chassi.
 
 ### Respostas principais
 
-- `200 OK` — veículo encontrado;
-- `404 Not Found` — chassi inexistente.
+- `200 OK` - veículo encontrado;
+- `404 Not Found` - chassi inexistente.
 
 ## PUT `/api/veiculos/{chassi}`
 
@@ -281,9 +284,9 @@ Exclui a especialização e o registro principal do veículo.
 
 ### Respostas principais
 
-- `204 No Content` — exclusão realizada;
-- `404 Not Found` — veículo inexistente;
-- `409 Conflict` — existem registros vinculados que impedem a exclusão.
+- `204 No Content` - exclusão realizada;
+- `404 Not Found` - veículo inexistente;
+- `409 Conflict` - existem registros vinculados que impedem a exclusão.
 
 ---
 
@@ -295,19 +298,38 @@ Base:
 /api/vendas
 ```
 
-O modelo segue:
+O modelo utiliza:
 
-- `numeroNota` — chave primária gerada automaticamente;
-- `idCliente` — cliente existente;
-- `matriculaVendedor` — vendedor existente;
-- `valorTotalVenda` — deve ser maior que zero;
-- `dataDaVenda` — data da venda.
+- `numeroNota` - chave primária gerada automaticamente;
+- `idCliente` - cliente existente;
+- `matriculaVendedor` - vendedor existente;
+- `valorTotalVenda` - deve ser maior que zero;
+- `dataDaVenda` - data da venda;
+- `chassis` - lista opcional de veículos associados à venda.
+
+A associação entre venda e veículo é persistida em `veiculos.numero_nota`.
 
 ## POST `/api/vendas`
 
-Cadastra uma venda.
+Cadastra uma venda e, quando informado, vincula os veículos indicados em `chassis` na mesma transação.
 
-### Requisição
+### Requisição com veículo
+
+```json
+{
+  "idCliente": 1,
+  "matriculaVendedor": 1,
+  "valorTotalVenda": 109900.00,
+  "dataDaVenda": "2026-08-20",
+  "chassis": [
+    "9BDTRANS000000001"
+  ]
+}
+```
+
+### Requisição sem veículos
+
+O campo `chassis` pode ser omitido:
 
 ```json
 {
@@ -322,52 +344,115 @@ Cadastra uma venda.
 
 ```json
 {
-  "numeroNota": 51,
-  "idCliente": 2,
-  "matriculaVendedor": 2,
-  "valorTotalVenda": 127450.00,
-  "dataDaVenda": "2026-08-20"
+  "numeroNota": 52,
+  "idCliente": 1,
+  "matriculaVendedor": 1,
+  "valorTotalVenda": 109900.00,
+  "dataDaVenda": "2026-08-20",
+  "chassis": [
+    "9BDTRANS000000001"
+  ]
+}
+```
+
+### Regras de associação de veículos
+
+- cada chassi informado deve existir;
+- um veículo já vinculado a outra venda não pode ser vinculado novamente;
+- o vínculo é feito por `veiculos.numero_nota`;
+- a criação da venda e os vínculos com veículos fazem parte da mesma transação;
+- se ocorrer erro ao vincular um veículo, a venda também é desfeita por rollback;
+- associar um veículo a uma venda altera `numeroNota`, mas não altera automaticamente `statusDisponibilidade`.
+
+### Respostas principais
+
+- `201 Created` - venda cadastrada;
+- `400 Bad Request` - valor, data ou identificadores inválidos;
+- `404 Not Found` - cliente, vendedor ou veículo informado não existe;
+- `409 Conflict` - algum veículo já está vinculado a outra venda.
+
+## GET `/api/vendas`
+
+Lista todas as vendas. Cada item inclui a lista `chassis` dos veículos atualmente associados.
+
+## GET `/api/vendas/{numeroNota}`
+
+Busca uma venda pelo número da nota e retorna também seus veículos associados.
+
+### Exemplo
+
+```json
+{
+  "numeroNota": 52,
+  "idCliente": 1,
+  "matriculaVendedor": 1,
+  "valorTotalVenda": 109900.00,
+  "dataDaVenda": "2026-08-20",
+  "chassis": [
+    "9BDTRANS000000001"
+  ]
 }
 ```
 
 ### Respostas principais
 
-- `201 Created` — venda cadastrada;
-- `400 Bad Request` — valor, data ou identificadores inválidos;
-- `404 Not Found` — cliente ou vendedor informado não existe.
-
-## GET `/api/vendas`
-
-Lista todas as vendas.
-
-## GET `/api/vendas/{numeroNota}`
-
-Busca uma venda pelo número da nota.
-
-### Respostas principais
-
-- `200 OK` — venda encontrada;
-- `404 Not Found` — venda inexistente.
+- `200 OK` - venda encontrada;
+- `404 Not Found` - venda inexistente.
 
 ## PUT `/api/vendas/{numeroNota}`
 
 Atualiza cliente, vendedor, valor e data da venda, preservando `numeroNota`.
 
+O campo `chassis` controla os vínculos da seguinte forma:
+
+| Conteúdo no PUT | Comportamento |
+|---|---|
+| campo `chassis` omitido | preserva os vínculos atuais |
+| `"chassis": []` | remove todos os veículos atualmente vinculados |
+| `"chassis": ["CHASSI1", "CHASSI2"]` | substitui os vínculos atuais pelos chassis informados |
+
+### Exemplo - substituir o veículo da venda
+
+```json
+{
+  "idCliente": 1,
+  "matriculaVendedor": 1,
+  "valorTotalVenda": 124900.00,
+  "dataDaVenda": "2026-08-20",
+  "chassis": [
+    "9BDTRANS000000002"
+  ]
+}
+```
+
+A atualização dos dados da venda, o desligamento dos veículos anteriores e o vínculo dos novos veículos acontecem na mesma transação.
+
+### Respostas principais
+
+- `200 OK` - venda atualizada;
+- `400 Bad Request` - dados inválidos;
+- `404 Not Found` - venda, cliente, vendedor ou veículo inexistente;
+- `409 Conflict` - tentativa de usar veículo vinculado a outra venda.
+
 ## DELETE `/api/vendas/{numeroNota}`
 
 Exclui uma venda quando não existem registros dependentes.
 
+Se ainda existirem veículos associados pela FK `veiculos.numero_nota`, a exclusão é bloqueada pelo banco e a API retorna conflito.
+
 ### Respostas principais
 
-- `204 No Content` — exclusão realizada;
-- `404 Not Found` — venda inexistente;
-- `409 Conflict` — existem veículos ou outros registros vinculados à venda.
+- `204 No Content` - exclusão realizada;
+- `404 Not Found` - venda inexistente;
+- `409 Conflict` - existem veículos ou outros registros vinculados à venda.
 
 ---
 
 # 5. Padrão de erros
 
-Erros de validação de DTO retornam `400 Bad Request` com os campos inválidos:
+Erros de validação de DTO retornam `400 Bad Request` com os campos inválidos.
+
+### Exemplo
 
 ```json
 {
@@ -383,11 +468,19 @@ Recurso inexistente:
 }
 ```
 
-Conflito por duplicidade:
+Duplicidade de veículo:
 
 ```json
 {
   "erro": "Placa já cadastrada: RZE4J82"
+}
+```
+
+Veículo já utilizado por outra venda:
+
+```json
+{
+  "erro": "Veículo já vinculado a outra venda: 9BDTRANS000000001"
 }
 ```
 
@@ -405,12 +498,12 @@ Conflito de integridade referencial:
 
 | Código | Significado |
 |---|---|
-| `200 OK` | Consulta ou atualização realizada |
-| `201 Created` | Cadastro realizado |
-| `204 No Content` | Exclusão realizada |
-| `400 Bad Request` | Dados ou regras de negócio inválidos |
-| `404 Not Found` | Recurso relacionado ou principal não encontrado |
-| `409 Conflict` | Duplicidade ou integridade referencial |
+| `200 OK` | consulta ou atualização realizada |
+| `201 Created` | cadastro realizado |
+| `204 No Content` | exclusão realizada |
+| `400 Bad Request` | dados ou regras de negócio inválidos |
+| `404 Not Found` | recurso principal ou relacionado não encontrado |
+| `409 Conflict` | duplicidade, veículo já vinculado ou integridade referencial |
 
 ---
 
@@ -418,7 +511,7 @@ Conflito de integridade referencial:
 
 Os contratos JSON desta documentação correspondem aos DTOs expostos pelo backend.
 
-No ambiente local, os endpoints CRUD estão disponíveis diretamente em:
+No ambiente local, os endpoints CRUD estão disponíveis em:
 
 ```text
 http://localhost:8080/api/...
@@ -439,6 +532,15 @@ As especializações devem ser enviadas usando:
 Cliente: FISICA | JURIDICA
 Veículo: NOVO | USADO
 ```
+
+Para vendas:
+
+- `chassis` é uma lista de strings;
+- no POST, `chassis` pode ser omitido;
+- no PUT, campo omitido preserva os vínculos;
+- no PUT, lista vazia remove todos os vínculos;
+- no PUT, lista preenchida substitui os vínculos atuais;
+- respostas de Venda incluem a lista `chassis`.
 
 ---
 
@@ -461,4 +563,40 @@ Foram verificados, entre outros cenários:
 - vendedor inexistente em venda;
 - valores inválidos;
 - respostas `400`, `404` e `409`;
-- bloqueio de exclusão quando existem registros vinculados.
+- bloqueio de exclusão quando existem registros vinculados;
+- cadastro de venda com veículo e persistência de `veiculos.numero_nota`;
+- retorno dos chassis associados em POST, GET e PUT de vendas;
+- rejeição com `409 Conflict` quando um veículo já pertence a outra venda;
+- rollback da venda quando o vínculo com veículo falha;
+- substituição de veículo em uma venda por PUT;
+- desvinculação do veículo anterior na atualização;
+- remoção de todos os vínculos usando `"chassis": []`;
+- limpeza dos registros temporários usados nos testes;
+- testes unitários de `VendaServiceTest` e `VendaControllerTest` executados com `BUILD SUCCESS`.
+
+---
+
+# 9. Resumo da implementação final
+
+O backend da Entrega 2 disponibiliza CRUD REST para:
+
+```text
+CLIENTES
+VENDEDORES
+VEICULOS
+VENDAS
+```
+
+As especializações de clientes e veículos são tratadas de forma consistente com o DDL oficial.
+
+A implementação de vendas inclui associação com múltiplos veículos por chassi, atualização dos vínculos e proteção contra reutilização de um veículo já associado a outra venda.
+
+As operações que envolvem mais de uma tabela são executadas com transação para evitar persistência parcial em caso de erro.
+
+O projeto continua utilizando o banco oficial com:
+
+```properties
+spring.jpa.hibernate.ddl-auto=none
+```
+
+Não é necessário que o Hibernate crie ou altere o esquema para o funcionamento do CRUD.
