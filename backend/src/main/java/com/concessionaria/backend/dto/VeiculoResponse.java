@@ -1,15 +1,21 @@
 package com.concessionaria.backend.dto;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import com.concessionaria.backend.model.StatusVeiculo;
 
 public record VeiculoResponse(
-        Long id,
+        String chassi,
+        Long numeroNota,
         String marca,
         String modelo,
-        Integer ano,
-        BigDecimal preco,
-        StatusVeiculo status
+        String cor,
+        LocalDate dataFabricacao,
+        StatusVeiculo statusDisponibilidade,
+        BigDecimal valorVeiculo,
+        String tipo,
+        String placa,
+        Integer quilometragem
 ) {
 }

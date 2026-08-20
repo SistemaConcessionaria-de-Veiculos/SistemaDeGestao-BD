@@ -100,4 +100,39 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.CONFLICT)
                 .body(error);
     }
+    @ExceptionHandler(VeiculoNaoEncontradoException.class)
+    public ResponseEntity<Map<String, String>> handleVeiculoNaoEncontrado(
+            VeiculoNaoEncontradoException exception
+    ) {
+        Map<String, String> error = new LinkedHashMap<>();
+        error.put("erro", exception.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(error);
+    }
+
+    @ExceptionHandler(ChassiVeiculoJaCadastradoException.class)
+    public ResponseEntity<Map<String, String>> handleChassiVeiculoJaCadastrado(
+            ChassiVeiculoJaCadastradoException exception
+    ) {
+        Map<String, String> error = new LinkedHashMap<>();
+        error.put("erro", exception.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(error);
+    }
+
+    @ExceptionHandler(PlacaVeiculoJaCadastradaException.class)
+    public ResponseEntity<Map<String, String>> handlePlacaVeiculoJaCadastrada(
+            PlacaVeiculoJaCadastradaException exception
+    ) {
+        Map<String, String> error = new LinkedHashMap<>();
+        error.put("erro", exception.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(error);
+    }
 }

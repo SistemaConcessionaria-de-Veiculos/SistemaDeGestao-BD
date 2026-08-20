@@ -1,13 +1,11 @@
 package com.concessionaria.backend.model;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
@@ -16,51 +14,116 @@ import jakarta.persistence.Table;
 public class Veiculo {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "chassi", nullable = false, length = 17)
+    private String chassi;
 
-    @Column(nullable = false)
+    @Column(name = "numero_nota")
+    private Long numeroNota;
+
+    @Column(name = "marca", nullable = false, length = 50)
     private String marca;
 
-    @Column(nullable = false)
+    @Column(name = "modelo", nullable = false, length = 80)
     private String modelo;
 
-    @Column(nullable = false)
-    private Integer ano;
-
+    @Column(name = "cor", nullable = false, length = 30)
     private String cor;
 
-    private Long quilometragem;
+    @Column(name = "data_fabricacao", nullable = false)
+    private LocalDate dataFabricacao;
 
-    @Column(nullable = false, precision = 12, scale = 2)
-    private BigDecimal preco;
+    @Convert(converter = StatusVeiculoConverter.class)
+    @Column(name = "status_disponibilidade", nullable = false, length = 20)
+    private StatusVeiculo statusDisponibilidade;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private StatusVeiculo status;
+    @Column(name = "valor_veiculo", nullable = false, precision = 12, scale = 2)
+    private BigDecimal valorVeiculo;
 
-    // --- Getters e Setters ---
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Veiculo() {
+    }
 
-    public String getMarca() { return marca; }
-    public void setMarca(String marca) { this.marca = marca; }
+    public Veiculo(
+            String chassi,
+            Long numeroNota,
+            String marca,
+            String modelo,
+            String cor,
+            LocalDate dataFabricacao,
+            StatusVeiculo statusDisponibilidade,
+            BigDecimal valorVeiculo) {
 
-    public String getModelo() { return modelo; }
-    public void setModelo(String modelo) { this.modelo = modelo; }
+        this.chassi = chassi;
+        this.numeroNota = numeroNota;
+        this.marca = marca;
+        this.modelo = modelo;
+        this.cor = cor;
+        this.dataFabricacao = dataFabricacao;
+        this.statusDisponibilidade = statusDisponibilidade;
+        this.valorVeiculo = valorVeiculo;
+    }
 
-    public Integer getAno() { return ano; }
-    public void setAno(Integer ano) { this.ano = ano; }
+    public String getChassi() {
+        return chassi;
+    }
 
-    public String getCor() { return cor; }
-    public void setCor(String cor) { this.cor = cor; }
+    public void setChassi(String chassi) {
+        this.chassi = chassi;
+    }
 
-    public Long getQuilometragem() { return quilometragem; }
-    public void setQuilometragem(Long quilometragem) { this.quilometragem = quilometragem; }
+    public Long getNumeroNota() {
+        return numeroNota;
+    }
 
-    public BigDecimal getPreco() { return preco; }
-    public void setPreco(BigDecimal preco) { this.preco = preco; }
+    public void setNumeroNota(Long numeroNota) {
+        this.numeroNota = numeroNota;
+    }
 
-    public StatusVeiculo getStatus() { return status; }
-    public void setStatus(StatusVeiculo status) { this.status = status; }
+    public String getMarca() {
+        return marca;
+    }
+
+    public void setMarca(String marca) {
+        this.marca = marca;
+    }
+
+    public String getModelo() {
+        return modelo;
+    }
+
+    public void setModelo(String modelo) {
+        this.modelo = modelo;
+    }
+
+    public String getCor() {
+        return cor;
+    }
+
+    public void setCor(String cor) {
+        this.cor = cor;
+    }
+
+    public LocalDate getDataFabricacao() {
+        return dataFabricacao;
+    }
+
+    public void setDataFabricacao(LocalDate dataFabricacao) {
+        this.dataFabricacao = dataFabricacao;
+    }
+
+    public StatusVeiculo getStatusDisponibilidade() {
+        return statusDisponibilidade;
+    }
+
+    public void setStatusDisponibilidade(
+            StatusVeiculo statusDisponibilidade) {
+        this.statusDisponibilidade = statusDisponibilidade;
+    }
+
+    public BigDecimal getValorVeiculo() {
+        return valorVeiculo;
+    }
+
+    public void setValorVeiculo(BigDecimal valorVeiculo) {
+        this.valorVeiculo = valorVeiculo;
+    }
 }

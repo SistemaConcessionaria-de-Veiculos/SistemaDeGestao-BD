@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -37,7 +38,9 @@ class VeiculoControllerTest {
 
     @BeforeEach
     void configurar() {
-        VeiculoController controller = new VeiculoController(veiculoService);
+        VeiculoController controller =
+                new VeiculoController(veiculoService);
+
         mockMvc = MockMvcBuilders
                 .standaloneSetup(controller)
                 .setControllerAdvice(new GlobalExceptionHandler())
@@ -47,80 +50,157 @@ class VeiculoControllerTest {
     @Test
     void deveCadastrarVeiculoERetornar201() throws Exception {
         VeiculoResponse resposta = new VeiculoResponse(
-                1L,
+                "9BWZZZ377VT004251",
+                null,
                 "Toyota",
                 "Corolla",
-                2024,
+                "Prata",
+                LocalDate.of(2024, 1, 10),
+                StatusVeiculo.DISPONIVEL,
                 new BigDecimal("150000.00"),
-                StatusVeiculo.DISPONIVEL
+                "NOVO",
+                null,
+                null
         );
-        when(veiculoService.cadastrar(any())).thenReturn(resposta);
+
+        when(veiculoService.cadastrar(any()))
+                .thenReturn(resposta);
 
         mockMvc.perform(post("/api/veiculos")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
+                                  "chassi": "9BWZZZ377VT004251",
+                                  "numeroNota": null,
                                   "marca": "Toyota",
                                   "modelo": "Corolla",
-                                  "ano": 2024,
                                   "cor": "Prata",
-                                  "quilometragem": 0,
-                                  "preco": 150000.00,
-                                  "status": "DISPONIVEL"
+                                  "dataFabricacao": "2024-01-10",
+                                  "statusDisponibilidade": "disponivel",
+                                  "valorVeiculo": 150000.00,
+                                  "tipo": "NOVO",
+                                  "placa": null,
+                                  "quilometragem": null
                                 }
                                 """))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.marca").value("Toyota"))
-                .andExpect(jsonPath("$.status").value("DISPONIVEL"));
+                .andExpect(
+                        jsonPath("$.chassi")
+                                .value("9BWZZZ377VT004251")
+                )
+                .andExpect(
+                        jsonPath("$.marca")
+                                .value("Toyota")
+                )
+                .andExpect(
+                        jsonPath("$.statusDisponibilidade")
+                                .value("disponivel")
+                )
+                .andExpect(
+                        jsonPath("$.tipo")
+                                .value("NOVO")
+                );
     }
 
     @Test
-    void deveRetornar400QuandoCadastroForInvalido() throws Exception {
+    void deveRetornar400QuandoCadastroForInvalido()
+            throws Exception {
+
         mockMvc.perform(post("/api/veiculos")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
+                                  "chassi": "",
                                   "marca": "",
                                   "modelo": "",
-                                  "ano": 2024,
-                                  "quilometragem": -1,
-                                  "preco": 0,
-                                  "status": null
+                                  "cor": "",
+                                  "dataFabricacao": null,
+                                  "statusDisponibilidade": null,
+                                  "valorVeiculo": 0,
+                                  "tipo": ""
                                 }
                                 """))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.marca").value("A marca é obrigatória"))
-                .andExpect(jsonPath("$.modelo").value("O modelo é obrigatório"))
-                .andExpect(jsonPath("$.quilometragem").value("A quilometragem não pode ser negativa"))
-                .andExpect(jsonPath("$.preco").value("O preço deve ser maior que zero"))
-                .andExpect(jsonPath("$.status").value("O status é obrigatório"));
+                .andExpect(
+                        jsonPath("$.chassi")
+                                .exists()
+                )
+                .andExpect(
+                        jsonPath("$.marca")
+                                .value("A marca é obrigatória")
+                )
+                .andExpect(
+                        jsonPath("$.modelo")
+                                .value("O modelo é obrigatório")
+                )
+                .andExpect(
+                        jsonPath("$.cor")
+                                .value("A cor é obrigatória")
+                )
+                .andExpect(
+                        jsonPath("$.dataFabricacao")
+                                .value("A data de fabricação é obrigatória")
+                )
+                .andExpect(
+                        jsonPath("$.statusDisponibilidade")
+                                .value("O status de disponibilidade é obrigatório")
+                )
+                .andExpect(
+                        jsonPath("$.valorVeiculo")
+                                .value("O valor do veículo deve ser maior que zero")
+                )
+                .andExpect(
+                        jsonPath("$.tipo")
+                                .exists()
+                );
 
-        verify(veiculoService, never()).cadastrar(any());
+        verify(veiculoService, never())
+                .cadastrar(any());
     }
 
     @Test
     void deveListarVeiculosERetornar200() throws Exception {
-        VeiculoListagemResponse veiculo = new VeiculoListagemResponse(
-                1L,
-                "Honda",
-                "Civic",
-                2024,
-                new BigDecimal("120000.00"),
-                StatusVeiculo.DISPONIVEL
-        );
-        when(veiculoService.listarVeiculos()).thenReturn(List.of(veiculo));
+        VeiculoListagemResponse veiculo =
+                new VeiculoListagemResponse(
+                        "9BG116GW04C400001",
+                        "Honda",
+                        "Civic",
+                        "Prata",
+                        LocalDate.of(2024, 1, 10),
+                        new BigDecimal("120000.00"),
+                        StatusVeiculo.DISPONIVEL,
+                        "NOVO",
+                        null,
+                        null
+                );
+
+        when(veiculoService.listarVeiculos())
+                .thenReturn(List.of(veiculo));
 
         mockMvc.perform(get("/api/veiculos"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].marca").value("Honda"))
-                .andExpect(jsonPath("$[0].modelo").value("Civic"));
+                .andExpect(
+                        jsonPath("$[0].chassi")
+                                .value("9BG116GW04C400001")
+                )
+                .andExpect(
+                        jsonPath("$[0].marca")
+                                .value("Honda")
+                )
+                .andExpect(
+                        jsonPath("$[0].modelo")
+                                .value("Civic")
+                )
+                .andExpect(
+                        jsonPath("$[0].tipo")
+                                .value("NOVO")
+                );
     }
 
     @Test
     void deveRetornar200EListaVazia() throws Exception {
-        when(veiculoService.listarVeiculos()).thenReturn(List.of());
+        when(veiculoService.listarVeiculos())
+                .thenReturn(List.of());
 
         mockMvc.perform(get("/api/veiculos"))
                 .andExpect(status().isOk())

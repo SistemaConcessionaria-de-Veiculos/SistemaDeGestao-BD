@@ -43,11 +43,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/clientes/**").permitAll()
                 .requestMatchers("/api/vendedores/**").permitAll()
+                .requestMatchers("/api/veiculos/**").permitAll()
 
-                // As histórias da 3ª iteração exigem funcionário autenticado, sem Role específica.
-                .requestMatchers(HttpMethod.POST, "/api/veiculos").authenticated()
-                .requestMatchers(HttpMethod.GET, "/api/veiculos").authenticated()
-                
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session
