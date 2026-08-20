@@ -9,7 +9,7 @@
       <h1>Cadastrar veículo</h1>
 
       <p>
-        Preencha os dados abaixo para adicionar um novo veículo ao sistema.
+        Preencha os dados para adicionar um novo veículo ao sistema.
       </p>
     </header>
 
@@ -20,6 +20,22 @@
       autocomplete="off"
     >
       <div class="form-group">
+        <label for="chassi">Chassi</label>
+
+        <input
+          id="chassi"
+          type="text"
+          name="chassi"
+          [(ngModel)]="chassi"
+          maxlength="17"
+          minlength="17"
+          placeholder="17 caracteres"
+          required
+          [disabled]="enviando"
+        />
+      </div>
+
+      <div class="form-group">
         <label for="marca">Marca</label>
 
         <input
@@ -27,6 +43,7 @@
           type="text"
           name="marca"
           [(ngModel)]="marca"
+          maxlength="50"
           placeholder="Ex.: Toyota"
           required
           [disabled]="enviando"
@@ -41,21 +58,8 @@
           type="text"
           name="modelo"
           [(ngModel)]="modelo"
+          maxlength="80"
           placeholder="Ex.: Corolla"
-          required
-          [disabled]="enviando"
-        />
-      </div>
-
-      <div class="form-group">
-        <label for="ano">Ano</label>
-
-        <input
-          id="ano"
-          type="number"
-          name="ano"
-          [(ngModel)]="ano"
-          placeholder="Ex.: 2024"
           required
           [disabled]="enviando"
         />
@@ -69,62 +73,141 @@
           type="text"
           name="cor"
           [(ngModel)]="cor"
+          maxlength="30"
           placeholder="Ex.: Prata"
-          [disabled]="enviando"
-        />
-      </div>
-
-      <div class="form-group">
-        <label for="quilometragem">Quilometragem</label>
-
-        <input
-          id="quilometragem"
-          type="number"
-          name="quilometragem"
-          [(ngModel)]="quilometragem"
-          placeholder="Ex.: 15000"
-          min="0"
-          [disabled]="enviando"
-        />
-      </div>
-
-      <div class="form-group">
-        <label for="preco">Preço</label>
-
-        <input
-          id="preco"
-          type="number"
-          name="preco"
-          [(ngModel)]="preco"
-          placeholder="Ex.: 129900"
-          min="0.01"
-          step="0.01"
           required
           [disabled]="enviando"
         />
       </div>
 
       <div class="form-group">
-        <label for="status">Status</label>
+        <label for="dataFabricacao">
+          Data de fabricação
+        </label>
+
+        <input
+          id="dataFabricacao"
+          type="date"
+          name="dataFabricacao"
+          [(ngModel)]="dataFabricacao"
+          required
+          [disabled]="enviando"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="valorVeiculo">
+          Valor do veículo
+        </label>
+
+        <input
+          id="valorVeiculo"
+          type="number"
+          name="valorVeiculo"
+          [(ngModel)]="valorVeiculo"
+          min="0.01"
+          step="0.01"
+          placeholder="Ex.: 129900"
+          required
+          [disabled]="enviando"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="statusDisponibilidade">
+          Status
+        </label>
 
         <select
-          id="status"
-          name="status"
-          [(ngModel)]="status"
+          id="statusDisponibilidade"
+          name="statusDisponibilidade"
+          [(ngModel)]="statusDisponibilidade"
           required
           [disabled]="enviando"
         >
-          <option value="DISPONIVEL">Disponível</option>
-          <option value="VENDIDO">Vendido</option>
-          <option value="EM_MANUTENCAO">Em manutenção</option>
+          <option value="disponivel">
+            Disponível
+          </option>
+
+          <option value="reservado">
+            Reservado
+          </option>
+
+          <option value="vendido">
+            Vendido
+          </option>
         </select>
       </div>
 
-      <p class="error-message" *ngIf="mensagemErro">
+      <div class="form-group">
+        <label for="tipo">Tipo</label>
+
+        <select
+          id="tipo"
+          name="tipo"
+          [(ngModel)]="tipo"
+          (ngModelChange)="alterarTipo()"
+          required
+          [disabled]="enviando"
+        >
+          <option value="NOVO">
+            Novo
+          </option>
+
+          <option value="USADO">
+            Usado
+          </option>
+        </select>
+      </div>
+
+      <ng-container *ngIf="tipo === 'USADO'">
+
+        <div class="form-group">
+          <label for="placa">Placa</label>
+
+          <input
+            id="placa"
+            type="text"
+            name="placa"
+            [(ngModel)]="placa"
+            minlength="7"
+            maxlength="7"
+            placeholder="Ex.: ABC1D23"
+            required
+            [disabled]="enviando"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="quilometragem">
+            Quilometragem
+          </label>
+
+          <input
+            id="quilometragem"
+            type="number"
+            name="quilometragem"
+            [(ngModel)]="quilometragem"
+            min="0"
+            placeholder="Ex.: 25000"
+            required
+            [disabled]="enviando"
+          />
+        </div>
+
+      </ng-container>
+
+      <p
+        class="error-message"
+        *ngIf="mensagemErro"
+      >
         {{ mensagemErro }}
       </p>
 
-      <p class="success-message" *ngIf="mensagemSucesso">
+      <p
+        class="success-message"
+        *ngIf="mensagemSucesso"
+      >
         {{ mensagemSucesso }}
       </p>
 
@@ -133,8 +216,13 @@
         type="submit"
         [disabled]="enviando"
       >
-        {{ enviando ? 'Cadastrando...' : 'Cadastrar veículo' }}
+        {{
+          enviando
+            ? 'Cadastrando...'
+            : 'Cadastrar veículo'
+        }}
       </button>
+
     </form>
 
   </section>

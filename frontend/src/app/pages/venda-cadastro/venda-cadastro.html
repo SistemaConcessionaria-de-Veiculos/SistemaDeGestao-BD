@@ -1,0 +1,228 @@
+<app-navbar></app-navbar>
+
+<main class="venda-page">
+  <section class="venda-card">
+
+    <header class="venda-header">
+      <span class="page-label">
+        CADASTRO DE VENDA
+      </span>
+
+      <h1>Registrar venda</h1>
+
+      <p>
+        Selecione cliente, vendedor e os veículos
+        relacionados à venda.
+      </p>
+    </header>
+
+    <p
+      class="loading-message"
+      *ngIf="carregandoDados"
+    >
+      Carregando dados...
+    </p>
+
+    <form
+      *ngIf="!carregandoDados"
+      class="venda-form"
+      #formulario="ngForm"
+      (ngSubmit)="cadastrar(formulario)"
+      autocomplete="off"
+    >
+
+      <div class="form-group">
+        <label for="idCliente">Cliente</label>
+
+        <select
+          id="idCliente"
+          name="idCliente"
+          [(ngModel)]="idCliente"
+          required
+          [disabled]="enviando"
+        >
+          <option
+            [ngValue]="null"
+            disabled
+          >
+            Selecione um cliente
+          </option>
+
+          <option
+            *ngFor="let cliente of clientes"
+            [ngValue]="cliente.idCliente"
+          >
+            #{{ cliente.idCliente }}
+            - {{ cliente.nome }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="matriculaVendedor">
+          Vendedor
+        </label>
+
+        <select
+          id="matriculaVendedor"
+          name="matriculaVendedor"
+          [(ngModel)]="matriculaVendedor"
+          required
+          [disabled]="enviando"
+        >
+          <option
+            [ngValue]="null"
+            disabled
+          >
+            Selecione um vendedor
+          </option>
+
+          <option
+            *ngFor="let vendedor of vendedores"
+            [ngValue]="vendedor.matricula"
+          >
+            #{{ vendedor.matricula }}
+            - {{ vendedor.nome }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="valorTotalVenda">
+            Valor total
+          </label>
+
+          <input
+            id="valorTotalVenda"
+            type="number"
+            name="valorTotalVenda"
+            [(ngModel)]="valorTotalVenda"
+            min="0.01"
+            step="0.01"
+            required
+            [disabled]="enviando"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="dataDaVenda">
+            Data da venda
+          </label>
+
+          <input
+            id="dataDaVenda"
+            type="date"
+            name="dataDaVenda"
+            [(ngModel)]="dataDaVenda"
+            required
+            [disabled]="enviando"
+          />
+        </div>
+
+      </div>
+
+      <div class="veiculos-section">
+
+        <div class="section-header">
+          <div>
+            <h2>Veículos</h2>
+
+            <p>
+              A venda pode conter um ou mais veículos.
+              Também é permitido cadastrar sem veículo.
+            </p>
+          </div>
+
+          <span class="contador">
+            {{ chassisSelecionados.length }}
+            selecionado(s)
+          </span>
+        </div>
+
+        <div
+          class="empty-message"
+          *ngIf="veiculos.length === 0"
+        >
+          Nenhum veículo disponível para seleção.
+        </div>
+
+        <div
+          class="veiculos-lista"
+          *ngIf="veiculos.length > 0"
+        >
+          <label
+            class="veiculo-option"
+            *ngFor="let veiculo of veiculos"
+          >
+            <input
+              type="checkbox"
+              [checked]="
+                chassisSelecionados.includes(
+                  veiculo.chassi
+                )
+              "
+              [disabled]="enviando"
+              (change)="
+                alternarChassi(
+                  veiculo.chassi,
+                  $any($event.target).checked
+                )
+              "
+            />
+
+            <div>
+              <strong>
+                {{ veiculo.marca }}
+                {{ veiculo.modelo }}
+              </strong>
+
+              <span>
+                {{ veiculo.chassi }}
+              </span>
+
+              <small>
+                {{
+                  veiculo.valorVeiculo
+                    | currency:'BRL'
+                }}
+                · {{ veiculo.tipo }}
+                · {{ veiculo.statusDisponibilidade }}
+              </small>
+            </div>
+          </label>
+        </div>
+
+      </div>
+
+      <p
+        class="error-message"
+        *ngIf="mensagemErro"
+      >
+        {{ mensagemErro }}
+      </p>
+
+      <p
+        class="success-message"
+        *ngIf="mensagemSucesso"
+      >
+        {{ mensagemSucesso }}
+      </p>
+
+      <button
+        type="submit"
+        class="submit-button"
+        [disabled]="enviando"
+      >
+        {{
+          enviando
+            ? 'Registrando...'
+            : 'Registrar venda'
+        }}
+      </button>
+
+    </form>
+
+  </section>
+</main>
