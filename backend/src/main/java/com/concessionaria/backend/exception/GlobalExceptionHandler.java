@@ -8,6 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.http.HttpStatus;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -69,6 +70,31 @@ public class GlobalExceptionHandler {
     ) {
         Map<String, String> error = new LinkedHashMap<>();
         error.put("erro", exception.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(error);
+    }
+    @ExceptionHandler(CpfVendedorJaCadastradoException.class)
+    public ResponseEntity<Map<String, String>> handleCpfVendedorJaCadastrado(
+            CpfVendedorJaCadastradoException exception
+    ) {
+        Map<String, String> error = new LinkedHashMap<>();
+        error.put("erro", exception.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(error);
+    }
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, String>> handleDataIntegrityViolation(
+            DataIntegrityViolationException exception
+    ) {
+        Map<String, String> error = new LinkedHashMap<>();
+        error.put(
+                "erro",
+                "Não é possível concluir a operação porque existem registros vinculados"
+        );
 
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
