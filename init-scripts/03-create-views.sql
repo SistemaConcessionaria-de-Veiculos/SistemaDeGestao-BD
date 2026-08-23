@@ -1,4 +1,6 @@
 use concessionaria;
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
 
 create or replace view v_resumo_vendas as
 select

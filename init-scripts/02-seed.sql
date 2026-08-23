@@ -1,4 +1,6 @@
 USE concessionaria;
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
 
 -- =========================================================
 -- POVOAMENTO DO BANCO DE DADOS

@@ -1,0 +1,350 @@
+<app-navbar></app-navbar>
+
+<main class="page-container">
+
+  <section class="page-header">
+    <div>
+      <p class="eyebrow">Consultas gerenciais</p>
+
+      <h1>Relatórios</h1>
+
+      <p class="subtitle">
+        Visualização dos dados consolidados pelas Views SQL do sistema.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="refresh-button"
+      (click)="carregarRelatorios()"
+      [disabled]="carregando"
+    >
+      {{ carregando ? 'Atualizando...' : 'Atualizar dados' }}
+    </button>
+  </section>
+
+  <div
+    *ngIf="mensagemErro"
+    class="message error-message"
+  >
+    {{ mensagemErro }}
+  </div>
+
+  <div
+    *ngIf="carregando"
+    class="loading"
+  >
+    Carregando relatórios...
+  </div>
+
+  <div *ngIf="!carregando && !mensagemErro">
+
+    <section class="report-section">
+      <div class="section-heading">
+        <div>
+          <span class="view-name">
+            View SQL: Resumo de Vendas
+          </span>
+
+          <h2>Resumo de vendas</h2>
+
+          <p>
+            Vendas realizadas com informações de cliente,
+            vendedor, quantidade de veículos e valor total.
+          </p>
+        </div>
+
+        <span class="record-count">
+          {{ resumoVendas.length }} registros
+        </span>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Nota</th>
+              <th>Data</th>
+              <th>Cliente</th>
+              <th>Vendedor</th>
+              <th>Veículos</th>
+              <th>Valor total</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let venda of resumoVendas">
+              <td>
+                #{{ venda.numeroNota }}
+              </td>
+
+              <td>
+                {{ venda.dataDaVenda | date:'dd/MM/yyyy' }}
+              </td>
+
+              <td>
+                <strong>
+                  {{ venda.nomeCliente }}
+                </strong>
+
+                <span class="secondary-info">
+                  Cliente #{{ venda.idCliente }}
+                </span>
+              </td>
+
+              <td>
+                <strong>
+                  {{ venda.nomeVendedor }}
+                </strong>
+
+                <span class="secondary-info">
+                  Matrícula #{{ venda.matriculaVendedor }}
+                </span>
+              </td>
+
+              <td>
+                {{ venda.quantidadeVeiculos }}
+              </td>
+
+              <td class="money">
+                {{
+                  venda.valorTotalVenda
+                    | currency:'BRL':'symbol':'1.2-2':'pt-BR'
+                }}
+              </td>
+            </tr>
+
+            <tr *ngIf="resumoVendas.length === 0">
+              <td
+                colspan="6"
+                class="empty-row"
+              >
+                Nenhuma venda encontrada.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="report-section">
+      <div class="section-heading">
+        <div>
+          <span class="view-name">
+            View SQL: Clientes e Compras
+          </span>
+
+          <h2>Compras por cliente</h2>
+
+          <p>
+            Consolidado de compras, veículos adquiridos e valor
+            total movimentado por cada cliente.
+          </p>
+        </div>
+
+        <span class="record-count">
+          {{ clientesCompras.length }} registros
+        </span>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Quantidade de compras</th>
+              <th>Veículos adquiridos</th>
+              <th>Valor total</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let cliente of clientesCompras">
+              <td>
+                <strong>
+                  {{ cliente.nomeCliente }}
+                </strong>
+
+                <span class="secondary-info">
+                  Cliente #{{ cliente.idCliente }}
+                </span>
+              </td>
+
+              <td>
+                {{ cliente.quantidadeCompras }}
+              </td>
+
+              <td>
+                {{ cliente.quantidadeVeiculos }}
+              </td>
+
+              <td class="money">
+                {{
+                  cliente.valorTotalCompras
+                    | currency:'BRL':'symbol':'1.2-2':'pt-BR'
+                }}
+              </td>
+            </tr>
+
+            <tr *ngIf="clientesCompras.length === 0">
+              <td
+                colspan="4"
+                class="empty-row"
+              >
+                Nenhum cliente encontrado.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="report-section">
+      <div class="section-heading">
+        <div>
+          <span class="view-name">
+            View SQL: Veículos e Customizações
+          </span>
+
+          <h2>Veículos e customizações</h2>
+
+          <p>
+            Valores dos veículos, customizações aplicadas e custo
+            total após os opcionais.
+          </p>
+        </div>
+
+        <span class="record-count">
+          {{ veiculosCustomizacoes.length }} registros
+        </span>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Veículo</th>
+              <th>Tipo</th>
+              <th>Status</th>
+              <th>Placa / Km</th>
+              <th>Customizações</th>
+              <th>Valor veículo</th>
+              <th>Custo opcionais</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let veiculo of veiculosCustomizacoes">
+
+              <td>
+                <strong>
+                  {{ veiculo.marca }}
+                  {{ veiculo.modelo }}
+                </strong>
+
+                <span class="secondary-info chassi">
+                  {{ veiculo.chassi }}
+                </span>
+              </td>
+
+              <td>
+                <span class="badge">
+                  {{ veiculo.tipoVeiculo }}
+                </span>
+              </td>
+
+              <td>
+                <span
+                  class="status-badge"
+                  [class.status-disponivel]="
+                    veiculo.statusDisponibilidade === 'disponivel'
+                  "
+                  [class.status-reservado]="
+                    veiculo.statusDisponibilidade === 'reservado'
+                  "
+                  [class.status-vendido]="
+                    veiculo.statusDisponibilidade === 'vendido'
+                  "
+                >
+                  {{ veiculo.statusDisponibilidade }}
+                </span>
+              </td>
+
+              <td>
+                <ng-container
+                  *ngIf="veiculo.tipoVeiculo === 'USADO'; else veiculoNovo"
+                >
+                  <strong>
+                    {{ veiculo.placa || '-' }}
+                  </strong>
+
+                  <span class="secondary-info">
+                    {{
+                      veiculo.quilometragem !== null
+                        ? (veiculo.quilometragem | number:'1.0-0':'pt-BR') + ' km'
+                        : '-'
+                    }}
+                  </span>
+                </ng-container>
+
+                <ng-template #veiculoNovo>
+                  <span class="secondary-info">
+                    Veículo novo
+                  </span>
+                </ng-template>
+              </td>
+
+              <td>
+                <strong>
+                  {{ veiculo.quantidadeCustomizacoes }}
+                  {{
+                    veiculo.quantidadeCustomizacoes === 1
+                      ? 'item'
+                      : 'itens'
+                  }}
+                </strong>
+
+                <span class="secondary-info customizacoes">
+                  {{ veiculo.customizacoes }}
+                </span>
+              </td>
+
+              <td class="money">
+                {{
+                  veiculo.valorVeiculo
+                    | currency:'BRL':'symbol':'1.2-2':'pt-BR'
+                }}
+              </td>
+
+              <td class="money">
+                {{
+                  veiculo.custoCustomizacoes
+                    | currency:'BRL':'symbol':'1.2-2':'pt-BR'
+                }}
+              </td>
+
+              <td class="money total-money">
+                {{
+                  veiculo.valorTotalComCustomizacoes
+                    | currency:'BRL':'symbol':'1.2-2':'pt-BR'
+                }}
+              </td>
+            </tr>
+
+            <tr *ngIf="veiculosCustomizacoes.length === 0">
+              <td
+                colspan="8"
+                class="empty-row"
+              >
+                Nenhum veículo encontrado.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </div>
+
+</main>
