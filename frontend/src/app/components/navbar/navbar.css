@@ -1,11 +1,12 @@
 .topbar {
   min-height: 86px;
-  padding: 0 7%;
+  padding: 12px 7%;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: nowrap;
+
+  gap: 18px;
 
   background: #ffffff;
 
@@ -21,6 +22,8 @@
   gap: 14px;
 
   cursor: pointer;
+
+  flex-shrink: 0;
 }
 
 .brand-logo {
@@ -40,6 +43,8 @@
 .brand-text strong {
   font-size: 18px;
   color: #111827;
+
+  white-space: nowrap;
 }
 
 .brand-text span {
@@ -47,19 +52,18 @@
 
   font-size: 12px;
   color: #6b7280;
+
+  white-space: nowrap;
 }
 
 .navigation {
   display: flex;
   align-items: center;
-  flex: 1;
-  min-width: 0;
   justify-content: flex-end;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  overflow-y: hidden;
 
   gap: 10px;
+
+  flex-wrap: wrap;
 }
 
 .nav-link {
@@ -76,7 +80,9 @@
 
   white-space: nowrap;
 
-  transition: 0.2s;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
 }
 
 .nav-link:hover {
@@ -89,10 +95,18 @@
   color: #3730a3;
 }
 
-@media (max-width: 1250px) {
+@media (max-width: 1350px) {
   .topbar {
-    min-height: 76px;
-    padding: 0 3%;
+    padding: 12px 4%;
+
+    flex-direction: column;
+    align-items: flex-start;
+
+    gap: 12px;
+  }
+
+  .brand {
+    width: 100%;
   }
 
   .brand-logo {
@@ -101,7 +115,7 @@
   }
 
   .brand-text strong {
-    font-size: 16px;
+    font-size: 17px;
   }
 
   .brand-text span {
@@ -109,19 +123,39 @@
   }
 
   .navigation {
+    width: 100%;
+
+    justify-content: flex-start;
+
     gap: 6px;
   }
 
   .nav-link {
     padding: 8px 10px;
+
     font-size: 13px;
+  }
+}
+
+@media (max-width: 720px) {
+  .topbar {
+    padding: 12px 4%;
+
+    align-items: stretch;
+  }
+
+  .brand {
+    justify-content: center;
+  }
+
+  .navigation {
+    justify-content: center;
   }
 }
 
 @media (max-width: 520px) {
   .topbar {
-    min-height: 68px;
-    padding: 0 2%;
+    padding: 12px 4%;
   }
 
   .brand-logo {
@@ -130,15 +164,50 @@
   }
 
   .brand-text strong {
+    font-size: 15px;
+  }
+
+  .brand-text span {
+    font-size: 11px;
+  }
+
+  .navigation {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 8px;
+  }
+
+  .nav-link {
+    width: 100%;
+
+    padding: 9px 8px;
+
+    text-align: center;
+
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 360px) {
+  .brand {
+    gap: 8px;
+  }
+
+  .brand-logo {
+    width: 56px;
+    height: 42px;
+  }
+
+  .brand-text strong {
     font-size: 14px;
   }
 
   .brand-text span {
-    display: none;
+    font-size: 10px;
   }
 
-  .nav-link {
-    padding: 7px 9px;
-    font-size: 12px;
+  .navigation {
+    grid-template-columns: 1fr;
   }
 }
