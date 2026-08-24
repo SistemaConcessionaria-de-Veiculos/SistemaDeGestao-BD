@@ -4,12 +4,15 @@
 
   <section class="page-header">
     <div>
-      <p class="eyebrow">Consultas gerenciais</p>
+      <p class="eyebrow">
+        Consultas gerenciais
+      </p>
 
       <h1>Relatórios</h1>
 
       <p class="subtitle">
         Visualização dos dados consolidados pelas Views SQL do sistema.
+        Os relatórios também podem ser exportados em formato CSV.
       </p>
     </div>
 
@@ -39,9 +42,14 @@
 
   <div *ngIf="!carregando && !mensagemErro">
 
+    <!-- RESUMO DE VENDAS -->
+
     <section class="report-section">
+
       <div class="section-heading">
-        <div>
+
+        <div class="section-description">
+
           <span class="view-name">
             View SQL: Resumo de Vendas
           </span>
@@ -52,15 +60,32 @@
             Vendas realizadas com informações de cliente,
             vendedor, quantidade de veículos e valor total.
           </p>
+
         </div>
 
-        <span class="record-count">
-          {{ resumoVendas.length }} registros
-        </span>
+        <div class="section-actions">
+
+          <span class="record-count">
+            {{ resumoVendas.length }} registros
+          </span>
+
+          <button
+            type="button"
+            class="export-button"
+            (click)="exportarResumoVendasCsv()"
+            [disabled]="resumoVendas.length === 0"
+          >
+            Exportar CSV
+          </button>
+
+        </div>
+
       </div>
 
       <div class="table-wrapper">
+
         <table>
+
           <thead>
             <tr>
               <th>Nota</th>
@@ -73,7 +98,9 @@
           </thead>
 
           <tbody>
+
             <tr *ngFor="let venda of resumoVendas">
+
               <td>
                 #{{ venda.numeroNota }}
               </td>
@@ -83,6 +110,7 @@
               </td>
 
               <td>
+
                 <strong>
                   {{ venda.nomeCliente }}
                 </strong>
@@ -90,9 +118,11 @@
                 <span class="secondary-info">
                   Cliente #{{ venda.idCliente }}
                 </span>
+
               </td>
 
               <td>
+
                 <strong>
                   {{ venda.nomeVendedor }}
                 </strong>
@@ -100,6 +130,7 @@
                 <span class="secondary-info">
                   Matrícula #{{ venda.matriculaVendedor }}
                 </span>
+
               </td>
 
               <td>
@@ -112,24 +143,37 @@
                     | currency:'BRL':'symbol':'1.2-2':'pt-BR'
                 }}
               </td>
+
             </tr>
 
             <tr *ngIf="resumoVendas.length === 0">
+
               <td
                 colspan="6"
                 class="empty-row"
               >
                 Nenhuma venda encontrada.
               </td>
+
             </tr>
+
           </tbody>
+
         </table>
+
       </div>
+
     </section>
 
+
+    <!-- CLIENTES E COMPRAS -->
+
     <section class="report-section">
+
       <div class="section-heading">
-        <div>
+
+        <div class="section-description">
+
           <span class="view-name">
             View SQL: Clientes e Compras
           </span>
@@ -140,15 +184,32 @@
             Consolidado de compras, veículos adquiridos e valor
             total movimentado por cada cliente.
           </p>
+
         </div>
 
-        <span class="record-count">
-          {{ clientesCompras.length }} registros
-        </span>
+        <div class="section-actions">
+
+          <span class="record-count">
+            {{ clientesCompras.length }} registros
+          </span>
+
+          <button
+            type="button"
+            class="export-button"
+            (click)="exportarClientesComprasCsv()"
+            [disabled]="clientesCompras.length === 0"
+          >
+            Exportar CSV
+          </button>
+
+        </div>
+
       </div>
 
       <div class="table-wrapper">
+
         <table>
+
           <thead>
             <tr>
               <th>Cliente</th>
@@ -159,8 +220,11 @@
           </thead>
 
           <tbody>
+
             <tr *ngFor="let cliente of clientesCompras">
+
               <td>
+
                 <strong>
                   {{ cliente.nomeCliente }}
                 </strong>
@@ -168,6 +232,7 @@
                 <span class="secondary-info">
                   Cliente #{{ cliente.idCliente }}
                 </span>
+
               </td>
 
               <td>
@@ -184,43 +249,75 @@
                     | currency:'BRL':'symbol':'1.2-2':'pt-BR'
                 }}
               </td>
+
             </tr>
 
             <tr *ngIf="clientesCompras.length === 0">
+
               <td
                 colspan="4"
                 class="empty-row"
               >
                 Nenhum cliente encontrado.
               </td>
+
             </tr>
+
           </tbody>
+
         </table>
+
       </div>
+
     </section>
 
+
+    <!-- VEÍCULOS E CUSTOMIZAÇÕES -->
+
     <section class="report-section">
+
       <div class="section-heading">
-        <div>
+
+        <div class="section-description">
+
           <span class="view-name">
             View SQL: Veículos e Customizações
           </span>
 
-          <h2>Veículos e customizações</h2>
+          <h2>
+            Veículos e customizações
+          </h2>
 
           <p>
             Valores dos veículos, customizações aplicadas e custo
             total após os opcionais.
           </p>
+
         </div>
 
-        <span class="record-count">
-          {{ veiculosCustomizacoes.length }} registros
-        </span>
+        <div class="section-actions">
+
+          <span class="record-count">
+            {{ veiculosCustomizacoes.length }} registros
+          </span>
+
+          <button
+            type="button"
+            class="export-button"
+            (click)="exportarVeiculosCustomizacoesCsv()"
+            [disabled]="veiculosCustomizacoes.length === 0"
+          >
+            Exportar CSV
+          </button>
+
+        </div>
+
       </div>
 
       <div class="table-wrapper">
+
         <table>
+
           <thead>
             <tr>
               <th>Veículo</th>
@@ -235,9 +332,11 @@
           </thead>
 
           <tbody>
+
             <tr *ngFor="let veiculo of veiculosCustomizacoes">
 
               <td>
+
                 <strong>
                   {{ veiculo.marca }}
                   {{ veiculo.modelo }}
@@ -246,15 +345,19 @@
                 <span class="secondary-info chassi">
                   {{ veiculo.chassi }}
                 </span>
+
               </td>
 
               <td>
+
                 <span class="badge">
                   {{ veiculo.tipoVeiculo }}
                 </span>
+
               </td>
 
               <td>
+
                 <span
                   class="status-badge"
                   [class.status-disponivel]="
@@ -269,12 +372,18 @@
                 >
                   {{ veiculo.statusDisponibilidade }}
                 </span>
+
               </td>
 
               <td>
+
                 <ng-container
-                  *ngIf="veiculo.tipoVeiculo === 'USADO'; else veiculoNovo"
+                  *ngIf="
+                    veiculo.tipoVeiculo === 'USADO';
+                    else veiculoNovo
+                  "
                 >
+
                   <strong>
                     {{ veiculo.placa || '-' }}
                   </strong>
@@ -282,20 +391,28 @@
                   <span class="secondary-info">
                     {{
                       veiculo.quilometragem !== null
-                        ? (veiculo.quilometragem | number:'1.0-0':'pt-BR') + ' km'
+                        ? (
+                            veiculo.quilometragem
+                              | number:'1.0-0':'pt-BR'
+                          ) + ' km'
                         : '-'
                     }}
                   </span>
+
                 </ng-container>
 
                 <ng-template #veiculoNovo>
+
                   <span class="secondary-info">
                     Veículo novo
                   </span>
+
                 </ng-template>
+
               </td>
 
               <td>
+
                 <strong>
                   {{ veiculo.quantidadeCustomizacoes }}
                   {{
@@ -308,6 +425,7 @@
                 <span class="secondary-info customizacoes">
                   {{ veiculo.customizacoes }}
                 </span>
+
               </td>
 
               <td class="money">
@@ -330,19 +448,26 @@
                     | currency:'BRL':'symbol':'1.2-2':'pt-BR'
                 }}
               </td>
+
             </tr>
 
             <tr *ngIf="veiculosCustomizacoes.length === 0">
+
               <td
                 colspan="8"
                 class="empty-row"
               >
                 Nenhum veículo encontrado.
               </td>
+
             </tr>
+
           </tbody>
+
         </table>
+
       </div>
+
     </section>
 
   </div>
