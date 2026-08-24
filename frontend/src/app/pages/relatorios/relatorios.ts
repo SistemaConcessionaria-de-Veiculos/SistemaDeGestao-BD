@@ -5,6 +5,9 @@ import {
   OnInit,
 } from '@angular/core';
 
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
+
 import { Navbar } from '../../components/navbar/navbar';
 
 import {
@@ -86,6 +89,10 @@ export class Relatorios implements OnInit {
         },
       });
   }
+
+  // =========================
+  // EXPORTAÇÃO CSV
+  // =========================
 
   exportarResumoVendasCsv(): void {
     const cabecalhos = [
@@ -181,6 +188,293 @@ export class Relatorios implements OnInit {
     );
   }
 
+  // =========================
+  // EXPORTAÇÃO PDF
+  // =========================
+
+  exportarResumoVendasPdf(): void {
+    const doc = new jsPDF({
+      orientation: 'landscape',
+      unit: 'mm',
+      format: 'a4',
+    });
+
+    this.adicionarCabecalhoPdf(
+      doc,
+      'Relatório - Resumo de Vendas',
+      'Dados consolidados das vendas realizadas.',
+    );
+
+    autoTable(doc, {
+      startY: 34,
+
+      head: [[
+        'Nota',
+        'Data',
+        'Cliente',
+        'Vendedor',
+        'Veículos',
+        'Valor Total',
+      ]],
+
+      body: this.resumoVendas.map((venda) => [
+        `#${venda.numeroNota}`,
+        this.formatarData(venda.dataDaVenda),
+        venda.nomeCliente,
+        venda.nomeVendedor,
+        venda.quantidadeVeiculos,
+        this.formatarMoeda(venda.valorTotalVenda),
+      ]),
+
+      styles: {
+        fontSize: 8,
+        cellPadding: 2.5,
+      },
+
+      headStyles: {
+        fontStyle: 'bold',
+      },
+
+      margin: {
+        left: 12,
+        right: 12,
+      },
+
+      didDrawPage: () => {
+        this.adicionarRodapePdf(doc);
+      },
+    });
+
+    doc.save('relatorio-resumo-vendas.pdf');
+  }
+
+  exportarClientesComprasPdf(): void {
+    const doc = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4',
+    });
+
+    this.adicionarCabecalhoPdf(
+      doc,
+      'Relatório - Clientes e Compras',
+      'Consolidado de compras realizadas por cliente.',
+    );
+
+    autoTable(doc, {
+      startY: 34,
+
+      head: [[
+        'Cliente',
+        'Compras',
+        'Veículos',
+        'Valor Total',
+      ]],
+
+      body: this.clientesCompras.map((cliente) => [
+        cliente.nomeCliente,
+        cliente.quantidadeCompras,
+        cliente.quantidadeVeiculos,
+        this.formatarMoeda(cliente.valorTotalCompras),
+      ]),
+
+      styles: {
+        fontSize: 8,
+        cellPadding: 2.5,
+      },
+
+      headStyles: {
+        fontStyle: 'bold',
+      },
+
+      margin: {
+        left: 12,
+        right: 12,
+      },
+
+      didDrawPage: () => {
+        this.adicionarRodapePdf(doc);
+      },
+    });
+
+    doc.save('relatorio-clientes-compras.pdf');
+  }
+
+  exportarVeiculosCustomizacoesPdf(): void {
+    const doc = new jsPDF({
+      orientation: 'landscape',
+      unit: 'mm',
+      format: 'a4',
+    });
+
+    this.adicionarCabecalhoPdf(
+      doc,
+      'Relatório - Veículos e Customizações',
+      'Valores dos veículos e customizações associadas.',
+    );
+
+    autoTable(doc, {
+      startY: 34,
+
+      head: [[
+        'Veículo',
+        'Tipo',
+        'Status',
+        'Placa / Km',
+        'Customizações',
+        'Valor',
+        'Opcionais',
+        'Total',
+      ]],
+
+      body: this.veiculosCustomizacoes.map((veiculo) => [
+        `${veiculo.marca} ${veiculo.modelo}\n${veiculo.chassi}`,
+
+        veiculo.tipoVeiculo,
+
+        veiculo.statusDisponibilidade,
+
+        veiculo.tipoVeiculo === 'USADO'
+          ? `${veiculo.placa ?? '-'} / ${
+              veiculo.quilometragem ?? '-'
+            } km`
+          : 'Veículo novo',
+
+        veiculo.customizacoes || 'Nenhuma',
+
+        this.formatarMoeda(veiculo.valorVeiculo),
+
+        this.formatarMoeda(veiculo.custoCustomizacoes),
+
+        this.formatarMoeda(
+          veiculo.valorTotalComCustomizacoes,
+        ),
+      ]),
+
+      styles: {
+        fontSize: 7,
+        cellPadding: 2,
+        overflow: 'linebreak',
+      },
+
+      headStyles: {
+        fontStyle: 'bold',
+      },
+
+      columnStyles: {
+        0: {
+          cellWidth: 42,
+        },
+
+        1: {
+          cellWidth: 18,
+        },
+
+        2: {
+          cellWidth: 21,
+        },
+
+        3: {
+          cellWidth: 27,
+        },
+
+        4: {
+          cellWidth: 58,
+        },
+
+        5: {
+          cellWidth: 29,
+        },
+
+        6: {
+          cellWidth: 29,
+        },
+
+        7: {
+          cellWidth: 29,
+        },
+      },
+
+      margin: {
+        left: 8,
+        right: 8,
+      },
+
+      didDrawPage: () => {
+        this.adicionarRodapePdf(doc);
+      },
+    });
+
+    doc.save('relatorio-veiculos-customizacoes.pdf');
+  }
+
+  private adicionarCabecalhoPdf(
+    doc: jsPDF,
+    titulo: string,
+    descricao: string,
+  ): void {
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(16);
+
+    doc.text(
+      'Sistema de Gestão para Concessionária de Veículos',
+      12,
+      14,
+    );
+
+    doc.setFontSize(13);
+
+    doc.text(
+      titulo,
+      12,
+      22,
+    );
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+
+    doc.text(
+      descricao,
+      12,
+      28,
+    );
+  }
+
+  private adicionarRodapePdf(
+    doc: jsPDF,
+  ): void {
+    const quantidadePaginas =
+      doc.getNumberOfPages();
+
+    const larguraPagina =
+      doc.internal.pageSize.getWidth();
+
+    const alturaPagina =
+      doc.internal.pageSize.getHeight();
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+
+    doc.text(
+      `Gerado em ${new Date().toLocaleString('pt-BR')}`,
+      12,
+      alturaPagina - 7,
+    );
+
+    doc.text(
+      `Página ${quantidadePaginas}`,
+      larguraPagina - 12,
+      alturaPagina - 7,
+      {
+        align: 'right',
+      },
+    );
+  }
+
+  // =========================
+  // FUNÇÕES AUXILIARES
+  // =========================
+
   private exportarCsv(
     nomeArquivo: string,
     cabecalhos: string[],
@@ -189,7 +483,10 @@ export class Relatorios implements OnInit {
     const separador = ';';
 
     const conteudo = [
-      cabecalhos.map((item) => this.escaparCsv(item)).join(separador),
+      cabecalhos
+        .map((item) => this.escaparCsv(item))
+        .join(separador),
+
       ...linhas.map((linha) =>
         linha
           .map((item) => this.escaparCsv(item))

@@ -12,7 +12,7 @@
 
       <p class="subtitle">
         Visualização dos dados consolidados pelas Views SQL do sistema.
-        Os relatórios também podem ser exportados em formato CSV.
+        Os relatórios também podem ser exportados em CSV ou PDF.
       </p>
     </div>
 
@@ -76,6 +76,15 @@
             [disabled]="resumoVendas.length === 0"
           >
             Exportar CSV
+          </button>
+
+          <button
+            type="button"
+            class="export-button pdf-button"
+            (click)="exportarResumoVendasPdf()"
+            [disabled]="resumoVendas.length === 0"
+          >
+            Exportar PDF
           </button>
 
         </div>
@@ -202,6 +211,15 @@
             Exportar CSV
           </button>
 
+          <button
+            type="button"
+            class="export-button pdf-button"
+            (click)="exportarClientesComprasPdf()"
+            [disabled]="clientesCompras.length === 0"
+          >
+            Exportar PDF
+          </button>
+
         </div>
 
       </div>
@@ -308,6 +326,15 @@
             [disabled]="veiculosCustomizacoes.length === 0"
           >
             Exportar CSV
+          </button>
+
+          <button
+            type="button"
+            class="export-button pdf-button"
+            (click)="exportarVeiculosCustomizacoesPdf()"
+            [disabled]="veiculosCustomizacoes.length === 0"
+          >
+            Exportar PDF
           </button>
 
         </div>
