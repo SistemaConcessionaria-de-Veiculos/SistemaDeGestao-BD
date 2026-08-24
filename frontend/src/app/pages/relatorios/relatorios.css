@@ -60,7 +60,8 @@
   transition:
     background-color 0.2s,
     color 0.2s,
-    opacity 0.2s;
+    opacity 0.2s,
+    border-color 0.2s;
 }
 
 .refresh-button {
@@ -224,6 +225,18 @@
   opacity: 0.45;
 
   cursor: not-allowed;
+}
+
+.pdf-button {
+  background: #f9fafb;
+}
+
+.pdf-button:hover:not(:disabled) {
+  background: #f3f4f6;
+
+  color: #111827;
+
+  border-color: #9ca3af;
 }
 
 .table-wrapper {
@@ -412,6 +425,10 @@ td strong {
     grid-template-columns: 1fr 1fr;
   }
 
+  .record-count {
+    grid-column: 1 / -1;
+  }
+
   .record-count,
   .export-button {
     width: 100%;
@@ -423,5 +440,9 @@ td strong {
 @media (max-width: 360px) {
   .section-actions {
     grid-template-columns: 1fr;
+  }
+
+  .record-count {
+    grid-column: auto;
   }
 }
