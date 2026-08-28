@@ -618,3 +618,28 @@ A integração completa da aplicação foi validada utilizando um novo volume do
 As etapas do projeto são versionadas no repositório Git.
 
 As entregas podem ser disponibilizadas por meio de Releases no GitHub, permitindo identificar o estado do projeto correspondente a cada etapa da disciplina.
+
+## Trigger de Histórico de Preços
+
+Foi implementado o Trigger `trg_historico_preco_veiculos`, responsável por registrar automaticamente alterações no preço dos veículos.
+
+O Trigger é executado após uma atualização na tabela `veiculos`. Quando o campo `valor_veiculo` é alterado, um registro é inserido na tabela `historico_preco_veiculos`.
+
+São armazenados:
+
+- chassi do veículo;
+- valor anterior;
+- valor novo;
+- data e hora da alteração.
+
+O Trigger e a tabela de histórico são criados pelo arquivo:
+
+- `init-scripts/04-create-triggers.sql`
+
+Os comandos utilizados para demonstrar seu funcionamento estão disponíveis em:
+
+- `docs/TESTE_TRIGGER.sql`
+
+A explicação detalhada da regra está disponível em:
+
+- `docs/TRIGGER_HISTORICO_PRECOS.md`
